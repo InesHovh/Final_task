@@ -37,7 +37,7 @@ public:
     void NewClient();
     void DeleteClient();
 
-    void Registered();
+    void Registration();
     void AlreadyExist();
 
     void AddToDB();

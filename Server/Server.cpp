@@ -28,7 +28,7 @@ void Server::NewClient() {}
 
 void Server::DeleteClient() {}
 
-void Server::Registered() {}
+void Server::Registration() {}
 
 void Server::AlreadyExist() {}
 
