@@ -26,16 +26,22 @@ public:
     Server();
     Server(int port, std::string &pass);
 
-    void start();
+    void Start();
 
-    int getport() const;
-    std::string getpass() const;
+    int getPort() const;
+    std::string getPass() const;
     
-    Client *getclient() const;
-    void setclient(Client *client, std::string &nick, int fd);
+    Client *getClient() const;
+    void setClient(Client *client, std::string &nick, int fd);
 
-    void newclient();
-    void deleteclient();
+    void NewClient();
+    void DeleteClient();
+
+    void Registered();
+    void AlreadyExist();
+
+    void AddToDB();
+    void PutFromDB();
 
     ~Server();
 };

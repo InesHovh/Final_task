@@ -16,6 +16,9 @@ private:
     std::string m_name;
     std::string m_nick;
     std::string m_pass;
+    std::string m_msg;
+
+    bool m_reg;
 
     int m_clientfd;
     struct sockaddr_in m_clientaddr;
@@ -24,16 +27,26 @@ public:
     Client(int port, std::string &name, std::string &nick,
             std::string &pass);
     
-    void run();
+    void Run();
 
-    int getport() const;
-    std::string getname() const;
-    std::string getnick() const;
-    std::string getpass() const;
+    void SignUp();
+    void SignIn();
 
-    void setname(std::string &name);
-    void setnick(std::string &nick);
-    void setpass(std::string &pass);
+    int getPort() const;
+    std::string getName() const;
+    std::string getNick() const;
+    std::string getPass() const;
+
+    std::string getMsg() const;
+
+    void setName(std::string &name);
+    void setNick(std::string &nick);
+    void setPass(std::string &pass);
+
+    void setMsg(std::string &msg);
+    void SendMsg(std::string &nick, std::string &msg);
+
+    void PrivateChat();
 
     ~Client();
 };

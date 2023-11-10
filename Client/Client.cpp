@@ -4,23 +4,38 @@
 Client::Client() {}
 
 Client::Client(int port, std::string &name, std::string &nick,
-        std::string &pass) : m_port(port), m_name(name), m_nick(nick), m_pass(pass) {}
+        std::string &pass) : m_port(port), m_name(name), m_nick(nick), m_pass(pass) {
 
-void Client::run() {}
+    m_msg = "";
+}
 
-int Client::getport() const {}
+void Client::Run() {}
 
-std::string Client::getname() const {}
+void Client::SignUp() {}
 
-std::string Client::getnick() const {}
+void Client::SignIn() {}
 
-std::string Client::getpass() const {}
+int Client::getPort() const { return m_port; }
 
-void Client::setname(std::string &name) {}
+std::string Client::getName() const { return m_name; }
 
-void Client::setnick(std::string &nick) {}
+std::string Client::getNick() const { return m_nick; }
 
-void Client::setpass(std::string &pass) {}
+std::string Client::getPass() const { return m_pass; }
+
+std::string Client::getMsg() const { return m_msg; }
+
+void Client::setName(std::string &name) { m_name = name; }
+
+void Client::setNick(std::string &nick) { m_nick = nick; }
+
+void Client::setPass(std::string &pass) { m_pass = pass; }
+
+void Client::setMsg(std::string &msg) { m_msg = msg; }
+
+void Client::SendMsg(std::string &nick, std::string &msg) {}
+
+void Client::PrivateChat() {}
 
 Client::~Client() {}
 
