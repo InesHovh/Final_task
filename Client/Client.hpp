@@ -7,46 +7,55 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <netdb.h>
+#include <cstring>
+#include <unistd.h>
+#include <vector>
 
 class Client
 {
 private:
-    int m_port;
+    std::string m_port;
+    int m_clientsock;
+    std::string m_servaddr;
+
+    bool m_loggedin;
     
-    std::string m_name;
-    std::string m_nick;
-    std::string m_pass;
-    std::string m_msg;
+    // std::string m_name;
+    // std::string m_nick;
+    // std::string m_pass;
+    // std::string m_msg;
 
-    bool m_reg;
+    // bool m_reg;
 
-    int m_clientfd;
-    struct sockaddr_in m_clientaddr;
+    // int m_clientfd;
+    // struct sockaddr_in m_clientaddr;
 public:
-    Client();
-    Client(int port, std::string &name, std::string &nick,
-            std::string &pass);
+    // Client();
+    Client(const char *port, const char * servaddr);
     
-    void Run();
+    bool Start();
+    void Disconnection();
 
-    void SignUp();
-    void SignIn();
+    bool SignUp(const std::string& name, const std::string& nick, const std::string& pass);
+    bool SignIn(const std::string& nick, const std::string& pass);
 
-    int getPort() const;
-    std::string getName() const;
-    std::string getNick() const;
-    std::string getPass() const;
+    bool SendMsg(std::string &nick, std::string &msg); 
 
-    std::string getMsg() const;
+    // int getPort() const;
+    // std::string getName() const;
+    // std::string getNick() const;
+    // std::string getPass() const;
 
-    void setName(std::string &name);
-    void setNick(std::string &nick);
-    void setPass(std::string &pass);
+    // std::string getMsg() const;
 
-    void setMsg(std::string &msg);
-    void SendMsg(std::string &nick, std::string &msg);
+    // void setName(std::string &name);
+    // void setNick(std::string &nick);
+    // void setPass(std::string &pass);
 
-    void PrivateChat();
+    // void setMsg(std::string &msg);
+
+    // void PrivateChat();
 
     ~Client();
 };
