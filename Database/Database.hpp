@@ -2,24 +2,36 @@
 #define DATABASE_HPP
 
 #include <iostream>
+#include <pqxx/pqxx>
 
 class Database
 {
 private:
-    /* data */
+    const std::string m_dbname;
+    const std::string m_user;
+    const std::string m_password;
+    const std::string m_host;
+    const std::string m_port;
+
+    std::unique_ptr<pqxx::connection> m_connection;
+
 public:
-    Database(/* args */);
+    Database() {};
+    Database(const std::string dbname, const std::string user,
+            const std::string password, const std::string host,
+            const std::string port);
+
+    bool ConnectionToServer();
+    bool CreateUsersTable();
+    bool CreateMsgsTable();
+
+    // void CheckDB();
+    // void AddUser();
+
+    // void AddMsg();
+    // void PutMsg();
+
     ~Database();
 };
-
-Database::Database(/* args */)
-{
-}
-
-Database::~Database()
-{
-}
-
-
 
 #endif

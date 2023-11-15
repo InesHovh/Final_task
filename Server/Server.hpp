@@ -2,48 +2,38 @@
 #define SERVER_HPP
 
 #include <iostream>
-#include <sys/select.h>
-#include <sys/time.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
+#include <cstdlib>
+#include <cstring>
+#include <unistd.h>
 #include <arpa/inet.h>
-#include <map>
-#include "../Client/Client.hpp"
+#include <sys/types.h>
+#include <netdb.h>
+#include <vector>
+#include "../Database/Database.hpp"
 
+class Database;
 
-class Server
-{
+class Server {
 private:
-    int m_port;
-    std::string m_pass;
-    int m_servfd;
+    int m_servsock;
+    fd_set m_master;
+    int m_fdmax;
 
-    std::map<int, Client*> m_client;
-    std::map<std::string, int> m_newclient;
-
-    struct sockaddr_in m_servaddr;
+    Database m_database;
 public:
-    Server();
-    Server(int port, std::string &pass);
-
+    Server() {};
+    Server(const char *port);
     void Start();
 
-    int getPort() const;
-    std::string getPass() const;
-    
-    Client *getClient() const;
-    void setClient(Client *client, std::string &nick, int fd);
+    void ConnectionToDB(Database &database);
+    void DisconnectClient();
+    // void SignUp();
+    // void SignIn();
 
-    void NewClient();
-    void DeleteClient();
-
-    void Registration();
-    void AlreadyExist();
-
-    void AddToDB();
-    void PutFromDB();
+    // void AddToDB();
+    // void PutFromDB();
 
     ~Server();
 };
 
-#endif
+#endif // SERVER_HPP

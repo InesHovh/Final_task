@@ -45,6 +45,7 @@
         "stdexcept": "cpp",
         "streambuf": "cpp",
         "cinttypes": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "cstring": "cpp",user@Lsaran1-7:~/Desktop/Final_task/cmake-build-debug$user@Lsaran1-7:~/Desktop/Final_task/cmake-build-debug$
     }
 }
