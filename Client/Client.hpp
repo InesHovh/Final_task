@@ -12,52 +12,23 @@
 #include <unistd.h>
 #include <vector>
 
-class Client
-{
-private:
-    std::string m_port;
-    int m_clientsock;
-    std::string m_servaddr;
-
-    bool m_loggedin;
-    
-    // std::string m_name;
-    // std::string m_nick;
-    // std::string m_pass;
-    // std::string m_msg;
-
-    // bool m_reg;
-
-    // int m_clientfd;
-    // struct sockaddr_in m_clientaddr;
+class Client {
 public:
-    // Client();
-    Client(const char *port, const char * servaddr);
-    
+    Client(const char *port, const char *servaddr);
     bool Start();
-    void Disconnection();
-
-    bool SignUp(const std::string& name, const std::string& nick, const std::string& pass);
-    bool SignIn(const std::string& nick, const std::string& pass);
-
-    bool SendMsg(std::string &nick, std::string &msg); 
-
-    // int getPort() const;
-    // std::string getName() const;
-    // std::string getNick() const;
-    // std::string getPass() const;
-
-    // std::string getMsg() const;
-
-    // void setName(std::string &name);
-    // void setNick(std::string &nick);
-    // void setPass(std::string &pass);
-
-    // void setMsg(std::string &msg);
-
-    // void PrivateChat();
-
+    bool SendMsgToServer(const std::string &msg);
+    bool ReceiveMsgFromServer(std::string &receivedMsg);
     ~Client();
+
+    bool SignUp();
+    bool SignIn();
+// protected:
+    int m_clientsock;
+private:
+    const char *m_port;
+    const char *m_servaddr;
+    std::string m_login;
+    std::string m_pass;
 };
 
 #endif
