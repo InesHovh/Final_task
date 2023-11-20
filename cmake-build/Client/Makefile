@@ -130,29 +130,53 @@ Client/fast:
 	cd /home/user/Desktop/Final_task/cmake-build && $(MAKE) $(MAKESILENT) -f Client/CMakeFiles/Client.dir/build.make Client/CMakeFiles/Client.dir/build
 .PHONY : Client/fast
 
-Client.o: Client.cpp.o
-.PHONY : Client.o
+src/Client.o: src/Client.cpp.o
+.PHONY : src/Client.o
 
 # target to build an object file
-Client.cpp.o:
-	cd /home/user/Desktop/Final_task/cmake-build && $(MAKE) $(MAKESILENT) -f Client/CMakeFiles/Client.dir/build.make Client/CMakeFiles/Client.dir/Client.cpp.o
-.PHONY : Client.cpp.o
+src/Client.cpp.o:
+	cd /home/user/Desktop/Final_task/cmake-build && $(MAKE) $(MAKESILENT) -f Client/CMakeFiles/Client.dir/build.make Client/CMakeFiles/Client.dir/src/Client.cpp.o
+.PHONY : src/Client.cpp.o
 
-Client.i: Client.cpp.i
-.PHONY : Client.i
+src/Client.i: src/Client.cpp.i
+.PHONY : src/Client.i
 
 # target to preprocess a source file
-Client.cpp.i:
-	cd /home/user/Desktop/Final_task/cmake-build && $(MAKE) $(MAKESILENT) -f Client/CMakeFiles/Client.dir/build.make Client/CMakeFiles/Client.dir/Client.cpp.i
-.PHONY : Client.cpp.i
+src/Client.cpp.i:
+	cd /home/user/Desktop/Final_task/cmake-build && $(MAKE) $(MAKESILENT) -f Client/CMakeFiles/Client.dir/build.make Client/CMakeFiles/Client.dir/src/Client.cpp.i
+.PHONY : src/Client.cpp.i
 
-Client.s: Client.cpp.s
-.PHONY : Client.s
+src/Client.s: src/Client.cpp.s
+.PHONY : src/Client.s
 
 # target to generate assembly for a file
-Client.cpp.s:
-	cd /home/user/Desktop/Final_task/cmake-build && $(MAKE) $(MAKESILENT) -f Client/CMakeFiles/Client.dir/build.make Client/CMakeFiles/Client.dir/Client.cpp.s
-.PHONY : Client.cpp.s
+src/Client.cpp.s:
+	cd /home/user/Desktop/Final_task/cmake-build && $(MAKE) $(MAKESILENT) -f Client/CMakeFiles/Client.dir/build.make Client/CMakeFiles/Client.dir/src/Client.cpp.s
+.PHONY : src/Client.cpp.s
+
+src/main.o: src/main.cpp.o
+.PHONY : src/main.o
+
+# target to build an object file
+src/main.cpp.o:
+	cd /home/user/Desktop/Final_task/cmake-build && $(MAKE) $(MAKESILENT) -f Client/CMakeFiles/Client.dir/build.make Client/CMakeFiles/Client.dir/src/main.cpp.o
+.PHONY : src/main.cpp.o
+
+src/main.i: src/main.cpp.i
+.PHONY : src/main.i
+
+# target to preprocess a source file
+src/main.cpp.i:
+	cd /home/user/Desktop/Final_task/cmake-build && $(MAKE) $(MAKESILENT) -f Client/CMakeFiles/Client.dir/build.make Client/CMakeFiles/Client.dir/src/main.cpp.i
+.PHONY : src/main.cpp.i
+
+src/main.s: src/main.cpp.s
+.PHONY : src/main.s
+
+# target to generate assembly for a file
+src/main.cpp.s:
+	cd /home/user/Desktop/Final_task/cmake-build && $(MAKE) $(MAKESILENT) -f Client/CMakeFiles/Client.dir/build.make Client/CMakeFiles/Client.dir/src/main.cpp.s
+.PHONY : src/main.cpp.s
 
 # Help Target
 help:
@@ -163,9 +187,12 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... Client"
-	@echo "... Client.o"
-	@echo "... Client.i"
-	@echo "... Client.s"
+	@echo "... src/Client.o"
+	@echo "... src/Client.i"
+	@echo "... src/Client.s"
+	@echo "... src/main.o"
+	@echo "... src/main.i"
+	@echo "... src/main.s"
 .PHONY : help
 
 

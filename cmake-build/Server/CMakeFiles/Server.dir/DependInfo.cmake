@@ -8,7 +8,9 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/user/Desktop/Final_task/Server/Server.cpp" "Server/CMakeFiles/Server.dir/Server.cpp.o" "gcc" "Server/CMakeFiles/Server.dir/Server.cpp.o.d"
+  "/home/user/Desktop/Final_task/Server/src/Database.cpp" "Server/CMakeFiles/Server.dir/src/Database.cpp.o" "gcc" "Server/CMakeFiles/Server.dir/src/Database.cpp.o.d"
+  "/home/user/Desktop/Final_task/Server/src/Server.cpp" "Server/CMakeFiles/Server.dir/src/Server.cpp.o" "gcc" "Server/CMakeFiles/Server.dir/src/Server.cpp.o.d"
+  "/home/user/Desktop/Final_task/Server/src/main.cpp" "Server/CMakeFiles/Server.dir/src/main.cpp.o" "gcc" "Server/CMakeFiles/Server.dir/src/main.cpp.o.d"
   )
 
 # Targets to which this target links.

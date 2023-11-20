@@ -8,7 +8,8 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/user/Desktop/Final_task/Client/Client.cpp" "Client/CMakeFiles/Client.dir/Client.cpp.o" "gcc" "Client/CMakeFiles/Client.dir/Client.cpp.o.d"
+  "/home/user/Desktop/Final_task/Client/src/Client.cpp" "Client/CMakeFiles/Client.dir/src/Client.cpp.o" "gcc" "Client/CMakeFiles/Client.dir/src/Client.cpp.o.d"
+  "/home/user/Desktop/Final_task/Client/src/main.cpp" "Client/CMakeFiles/Client.dir/src/main.cpp.o" "gcc" "Client/CMakeFiles/Client.dir/src/main.cpp.o.d"
   )
 
 # Targets to which this target links.

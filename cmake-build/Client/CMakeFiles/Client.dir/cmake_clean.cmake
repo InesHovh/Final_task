@@ -1,6 +1,8 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/Client.dir/Client.cpp.o"
-  "CMakeFiles/Client.dir/Client.cpp.o.d"
+  "CMakeFiles/Client.dir/src/Client.cpp.o"
+  "CMakeFiles/Client.dir/src/Client.cpp.o.d"
+  "CMakeFiles/Client.dir/src/main.cpp.o"
+  "CMakeFiles/Client.dir/src/main.cpp.o.d"
   "Client"
   "Client.pdb"
 )

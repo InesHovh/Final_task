@@ -1,6 +1,11 @@
-#include "Server.hpp"
+#include "../headers/Server.hpp"
 
 Server::Server(const char *port) : m_servsock(-1) {
+    init(port);
+    Start();
+}
+
+void Server::init(const char *port) {
     struct addrinfo servaddr, *result;
 
     memset(&servaddr, 0, sizeof(servaddr));
@@ -32,6 +37,7 @@ Server::Server(const char *port) : m_servsock(-1) {
     m_fdmax = m_servsock;
 }
 
+
 void Server::Start() {
     if (listen(m_servsock, 10) < 0) {
         std::cerr << "Failed to listen" << std::endl;
@@ -40,6 +46,7 @@ void Server::Start() {
     }
     std::cout << "Server started. Waiting for connections..." << std::endl;
 
+    fcntl(m_servsock, F_SETFL, O_NONBLOCK);
 
     timeval tv;
 
@@ -110,7 +117,6 @@ void Server::DisconnectClient() {
     }
 }
 
-
 void Server::ConnectionToDB(Database &database) {
     std::string dbname = "mydb";
     std::string user = "ines";
@@ -124,6 +130,18 @@ void Server::ConnectionToDB(Database &database) {
         std::cerr << "Failed to connect to DB" << std::endl;
 }
 
+void Server::LoginResponse(int clientsock, uint8_t response) {
+    send(clientsock, &response, sizeof(response), 0);
+}
+
+void Server::LoginRequest() {
+}
+
+void Server::RegResponse(int clientsock, uint8_t response) {
+    send(clientsock, &response, sizeof(response), 0);
+}
+
+void Server::RegRequest() {}
 
 // void Server::SignUp() {}
 
@@ -135,18 +153,5 @@ void Server::ConnectionToDB(Database &database) {
 
 Server::~Server() {
     close(m_servsock);
-}
-
-int main() {
-    Server server("1245");
-    Database database("mydb", "ines", "pass", "localhost", "5432");
-    // server.Start();
-
-    server.ConnectionToDB(database);
-    database.CreateUsersTable();
-    database.CreateMsgsTable();
-
-    // server.DisconnectClient();
-    return 0;
 }
 

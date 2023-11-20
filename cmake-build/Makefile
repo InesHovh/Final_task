@@ -142,19 +142,6 @@ Client/fast:
 	$(MAKE) $(MAKESILENT) -f Client/CMakeFiles/Client.dir/build.make Client/CMakeFiles/Client.dir/build
 .PHONY : Client/fast
 
-#=============================================================================
-# Target rules for targets named DatabaseLib
-
-# Build rule for target.
-DatabaseLib: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 DatabaseLib
-.PHONY : DatabaseLib
-
-# fast build rule for target.
-DatabaseLib/fast:
-	$(MAKE) $(MAKESILENT) -f Database/CMakeFiles/DatabaseLib.dir/build.make Database/CMakeFiles/DatabaseLib.dir/build
-.PHONY : DatabaseLib/fast
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -164,7 +151,6 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... Client"
-	@echo "... DatabaseLib"
 	@echo "... Server"
 .PHONY : help
 

@@ -1,1 +1,1 @@
-/usr/bin/c++ CMakeFiles/Server.dir/Server.cpp.o ../Database/CMakeFiles/DatabaseLib.dir/Database.cpp.o -o Server  -lpqxx 
+/usr/bin/c++ CMakeFiles/Server.dir/src/Server.cpp.o CMakeFiles/Server.dir/src/Database.cpp.o CMakeFiles/Server.dir/src/main.cpp.o -o Server  -lpqxx 

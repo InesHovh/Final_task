@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = 
+CXX_INCLUDES = -I/home/user/Desktop/Final_task/Client/headers
 
 CXX_FLAGS = -std=gnu++20
 

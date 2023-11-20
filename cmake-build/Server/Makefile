@@ -130,29 +130,77 @@ Server/fast:
 	cd /home/user/Desktop/Final_task/cmake-build && $(MAKE) $(MAKESILENT) -f Server/CMakeFiles/Server.dir/build.make Server/CMakeFiles/Server.dir/build
 .PHONY : Server/fast
 
-Server.o: Server.cpp.o
-.PHONY : Server.o
+src/Database.o: src/Database.cpp.o
+.PHONY : src/Database.o
 
 # target to build an object file
-Server.cpp.o:
-	cd /home/user/Desktop/Final_task/cmake-build && $(MAKE) $(MAKESILENT) -f Server/CMakeFiles/Server.dir/build.make Server/CMakeFiles/Server.dir/Server.cpp.o
-.PHONY : Server.cpp.o
+src/Database.cpp.o:
+	cd /home/user/Desktop/Final_task/cmake-build && $(MAKE) $(MAKESILENT) -f Server/CMakeFiles/Server.dir/build.make Server/CMakeFiles/Server.dir/src/Database.cpp.o
+.PHONY : src/Database.cpp.o
 
-Server.i: Server.cpp.i
-.PHONY : Server.i
+src/Database.i: src/Database.cpp.i
+.PHONY : src/Database.i
 
 # target to preprocess a source file
-Server.cpp.i:
-	cd /home/user/Desktop/Final_task/cmake-build && $(MAKE) $(MAKESILENT) -f Server/CMakeFiles/Server.dir/build.make Server/CMakeFiles/Server.dir/Server.cpp.i
-.PHONY : Server.cpp.i
+src/Database.cpp.i:
+	cd /home/user/Desktop/Final_task/cmake-build && $(MAKE) $(MAKESILENT) -f Server/CMakeFiles/Server.dir/build.make Server/CMakeFiles/Server.dir/src/Database.cpp.i
+.PHONY : src/Database.cpp.i
 
-Server.s: Server.cpp.s
-.PHONY : Server.s
+src/Database.s: src/Database.cpp.s
+.PHONY : src/Database.s
 
 # target to generate assembly for a file
-Server.cpp.s:
-	cd /home/user/Desktop/Final_task/cmake-build && $(MAKE) $(MAKESILENT) -f Server/CMakeFiles/Server.dir/build.make Server/CMakeFiles/Server.dir/Server.cpp.s
-.PHONY : Server.cpp.s
+src/Database.cpp.s:
+	cd /home/user/Desktop/Final_task/cmake-build && $(MAKE) $(MAKESILENT) -f Server/CMakeFiles/Server.dir/build.make Server/CMakeFiles/Server.dir/src/Database.cpp.s
+.PHONY : src/Database.cpp.s
+
+src/Server.o: src/Server.cpp.o
+.PHONY : src/Server.o
+
+# target to build an object file
+src/Server.cpp.o:
+	cd /home/user/Desktop/Final_task/cmake-build && $(MAKE) $(MAKESILENT) -f Server/CMakeFiles/Server.dir/build.make Server/CMakeFiles/Server.dir/src/Server.cpp.o
+.PHONY : src/Server.cpp.o
+
+src/Server.i: src/Server.cpp.i
+.PHONY : src/Server.i
+
+# target to preprocess a source file
+src/Server.cpp.i:
+	cd /home/user/Desktop/Final_task/cmake-build && $(MAKE) $(MAKESILENT) -f Server/CMakeFiles/Server.dir/build.make Server/CMakeFiles/Server.dir/src/Server.cpp.i
+.PHONY : src/Server.cpp.i
+
+src/Server.s: src/Server.cpp.s
+.PHONY : src/Server.s
+
+# target to generate assembly for a file
+src/Server.cpp.s:
+	cd /home/user/Desktop/Final_task/cmake-build && $(MAKE) $(MAKESILENT) -f Server/CMakeFiles/Server.dir/build.make Server/CMakeFiles/Server.dir/src/Server.cpp.s
+.PHONY : src/Server.cpp.s
+
+src/main.o: src/main.cpp.o
+.PHONY : src/main.o
+
+# target to build an object file
+src/main.cpp.o:
+	cd /home/user/Desktop/Final_task/cmake-build && $(MAKE) $(MAKESILENT) -f Server/CMakeFiles/Server.dir/build.make Server/CMakeFiles/Server.dir/src/main.cpp.o
+.PHONY : src/main.cpp.o
+
+src/main.i: src/main.cpp.i
+.PHONY : src/main.i
+
+# target to preprocess a source file
+src/main.cpp.i:
+	cd /home/user/Desktop/Final_task/cmake-build && $(MAKE) $(MAKESILENT) -f Server/CMakeFiles/Server.dir/build.make Server/CMakeFiles/Server.dir/src/main.cpp.i
+.PHONY : src/main.cpp.i
+
+src/main.s: src/main.cpp.s
+.PHONY : src/main.s
+
+# target to generate assembly for a file
+src/main.cpp.s:
+	cd /home/user/Desktop/Final_task/cmake-build && $(MAKE) $(MAKESILENT) -f Server/CMakeFiles/Server.dir/build.make Server/CMakeFiles/Server.dir/src/main.cpp.s
+.PHONY : src/main.cpp.s
 
 # Help Target
 help:
@@ -163,9 +211,15 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... Server"
-	@echo "... Server.o"
-	@echo "... Server.i"
-	@echo "... Server.s"
+	@echo "... src/Database.o"
+	@echo "... src/Database.i"
+	@echo "... src/Database.s"
+	@echo "... src/Server.o"
+	@echo "... src/Server.i"
+	@echo "... src/Server.s"
+	@echo "... src/main.o"
+	@echo "... src/main.i"
+	@echo "... src/main.s"
 .PHONY : help
 
 
