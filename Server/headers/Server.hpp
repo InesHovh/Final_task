@@ -11,8 +11,8 @@
 #include <vector>
 #include <array>
 #include <fcntl.h>
-// #include <sys/socket.h>
 #include "Database.hpp"
+#include "../../Client/headers/Client.hpp"
 
 struct Updatemsg {
     uint16_t    start_byte;
@@ -42,6 +42,12 @@ private:
     int m_fdmax;
 
     Database m_database;
+
+    std::map<std::string, std::string> m_clients;
+
+private:
+    bool HandleSignUpRequest(int clientsock);
+    bool HandleSignInRequest(int clientsock);
 public:
     Server() {};
     Server(const char *port);
@@ -52,19 +58,10 @@ public:
     void ConnectionToDB(Database &database);
     void DisconnectClient();
 
-    void LoginResponse(int clientsock, uint8_t response);
-    void LoginRequest();
-
-    void RegResponse(int clientsock, uint8_t response);
-    void RegRequest();
-
-    // void SignUp();
-    // void SignIn();
-
-    // void AddToDB();
-    // void PutFromDB();
+    void SignUp(const std::string &username, const std::string &pass);
+    bool SignIn(const std::string &username, const std::string &pass);
 
     ~Server();
 };
 
-#endif // SERVER_HPP
+#endif // Server.hpp

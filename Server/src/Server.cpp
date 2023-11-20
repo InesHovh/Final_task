@@ -1,4 +1,5 @@
 #include "../headers/Server.hpp"
+#include "../../Client/headers/Client.hpp"
 
 Server::Server(const char *port) : m_servsock(-1) {
     init(port);
@@ -37,7 +38,6 @@ void Server::init(const char *port) {
     m_fdmax = m_servsock;
 }
 
-
 void Server::Start() {
     if (listen(m_servsock, 10) < 0) {
         std::cerr << "Failed to listen" << std::endl;
@@ -74,33 +74,88 @@ void Server::Start() {
 
                     std::cout << "Connected " << std::endl;
                 } else {
-                    char buffer[1024];
-                    memset(buffer, 0, sizeof(buffer));
-                    int rec = recv(i, buffer, sizeof(buffer) - 1, 0);
-
-                    if (rec < 0) {
-                        std::cerr << "Failed to receive a message" << std::endl;
-                        close(i);
-                        FD_CLR(i, &m_master);
-                    } else if (rec == 0) {
-                        std::cout << "Client disconnected" << std::endl;
-                        close(i);
-                        FD_CLR(i, &m_master);
-                    } else {
-                        std::cout << "Received from client: " << buffer << std::endl;
-
-                        std::string response = "Server received: " + std::string(buffer);
-                        if (send(i, response.c_str(), response.size(), 0) < 0) {
-                            std::cerr << "Failed to send a message" << std::endl;
-                            close(i);
-                            FD_CLR(i, &m_master);
-                        }
+                    if (HandleSignInRequest(i)) {
+                        std::cout << "Successful login " << std::endl;
+                    }
+                    if (HandleSignUpRequest(i)) {
+                        std::cout << "Successful registration " << i << std::endl;
                     }
                 }
             }
         }
     }
 }
+
+
+bool Server::HandleSignInRequest(int clientSocket) {
+    User user;
+    char buffer[sizeof(User)];
+    memset(buffer, 0, sizeof(User));
+
+    if (recv(clientSocket, buffer, sizeof(User), 0) < 0) {
+        std::cerr << "Failed to receive Login request from client" << std::endl;
+        return false;
+    }
+
+    user = *reinterpret_cast<User*>(buffer);
+
+    std::string username(user.username, user.username_size);
+    std::string pass(user.pass, user.pass_size);
+
+    bool auth = SignIn(username, pass);
+
+    Response response = {0x01};
+    if (send(clientSocket, reinterpret_cast<char*>(&response), sizeof(response), 0) < 0) {
+        std::cerr << "Failed to send Login response to client" << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+bool Server::HandleSignUpRequest(int clientSocket) {
+    User user;
+    char buffer[sizeof(User)];
+    memset(buffer, 0, sizeof(User));
+
+    if (recv(clientSocket, buffer, sizeof(User), 0) < 0) {
+        std::cerr << "Failed to receive register request from client" << std::endl;
+        return false;
+    }
+
+    user = *reinterpret_cast<User*>(buffer);
+
+    std::string username(user.username, user.username_size);
+    std::string pass(user.pass, user.pass_size);
+
+    SignUp(username, pass);
+
+    Response response = {0x01};
+    if (send(clientSocket, reinterpret_cast<char*>(&response), sizeof(response), 0) < 0) {
+        std::cerr << "Failed to send register response to client" << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+void Server::SignUp(const std::string &username, const std::string &pass) {
+    this->m_clients[username] = pass;
+    std::cout << "User " << username << "registered successfully " << std::endl;
+}
+
+bool Server::SignIn(const std::string &username, const std::string &pass) {
+    auto it = this->m_clients.find(username);
+
+    if (it != this->m_clients.end() && it->second == pass) {
+        std::cout << "User " << username << " signed in successfully " << std::endl;
+        return true;
+    } else {
+        std::cout << "User " << username << " failed to sign in " << std::endl;
+        return false;
+    }
+}
+
 
 void Server::DisconnectClient() {
     std::cout << "Server is disconnecting clients..." << std::endl;
@@ -126,32 +181,10 @@ void Server::ConnectionToDB(Database &database) {
 
     if (database.ConnectionToServer()) {
         std::cout << "Server connected to DB" << std::endl;
-    }else
+    } else
         std::cerr << "Failed to connect to DB" << std::endl;
 }
-
-void Server::LoginResponse(int clientsock, uint8_t response) {
-    send(clientsock, &response, sizeof(response), 0);
-}
-
-void Server::LoginRequest() {
-}
-
-void Server::RegResponse(int clientsock, uint8_t response) {
-    send(clientsock, &response, sizeof(response), 0);
-}
-
-void Server::RegRequest() {}
-
-// void Server::SignUp() {}
-
-// void Server::SignIn() {}
-
-// void Server::AddToDB() {}
-
-// void Server::PutFromDB() {}
 
 Server::~Server() {
     close(m_servsock);
 }
-
