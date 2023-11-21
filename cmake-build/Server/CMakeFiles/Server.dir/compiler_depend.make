@@ -701,7 +701,9 @@ Server/CMakeFiles/Server.dir/src/Server.cpp.o: ../Server/src/Server.cpp \
   /usr/include/pqxx/transaction \
   /usr/include/pqxx/transaction.hxx \
   /usr/include/pqxx/transactor \
-  /usr/include/pqxx/transactor.hxx
+  /usr/include/pqxx/transactor.hxx \
+  ../Client/headers/Client.hpp \
+  ../Client/headers/Client.hpp
 
 Server/CMakeFiles/Server.dir/src/main.cpp.o: ../Server/src/main.cpp \
   /usr/include/stdc-predef.h \
@@ -1068,7 +1070,8 @@ Server/CMakeFiles/Server.dir/src/main.cpp.o: ../Server/src/main.cpp \
   /usr/include/pqxx/transaction \
   /usr/include/pqxx/transaction.hxx \
   /usr/include/pqxx/transactor \
-  /usr/include/pqxx/transactor.hxx
+  /usr/include/pqxx/transactor.hxx \
+  ../Client/headers/Client.hpp
 
 
 ../Server/src/main.cpp:
@@ -1142,6 +1145,8 @@ Server/CMakeFiles/Server.dir/src/main.cpp.o: ../Server/src/main.cpp \
 /usr/include/asm-generic/sockios.h:
 
 /usr/include/pqxx/field.hxx:
+
+../Client/headers/Client.hpp:
 
 /usr/include/pqxx/isolation.hxx:
 

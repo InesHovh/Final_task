@@ -21,8 +21,8 @@ struct User {
 };
 
 struct Response {
-    uint8_t OK;
-    uint8_t ERROR;
+    uint8_t OK = 0x01;
+    uint8_t ERROR = 0x00;
 };
 
 class Client {
@@ -30,8 +30,8 @@ public:
     Client();
     Client(const char *port, const char *servaddr);
     bool Start();
-    bool SendMsgToServer(const char *msg, size_t size);
-    bool ReceiveMsgFromServer(char *buffer, size_t size);
+    bool SendMsgToServer(std::string msg, size_t size);
+    bool ReceiveMsgFromServer(std::string buffer, size_t size);
     bool SendLoginRequest();
     bool SendRegistrationRequest();
     bool ReceiveResponse(Response &response);

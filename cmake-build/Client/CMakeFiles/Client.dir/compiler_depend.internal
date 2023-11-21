@@ -4,6 +4,7 @@
 Client/CMakeFiles/Client.dir/src/Client.cpp.o
  /home/user/Desktop/Final_task/Client/src/Client.cpp
  /usr/include/stdc-predef.h
+ /home/user/Desktop/Final_task/Client/headers/Client.hpp
  /usr/include/c++/11/iostream
  /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h
  /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h
@@ -194,8 +195,6 @@ Client/CMakeFiles/Client.dir/src/Client.cpp.o
  /usr/include/c++/11/bits/ostream.tcc
  /usr/include/c++/11/istream
  /usr/include/c++/11/bits/istream.tcc
- /home/user/Desktop/Final_task/Client/headers/Client.hpp
- /usr/include/x86_64-linux-gnu/sys/time.h
  /usr/include/x86_64-linux-gnu/sys/socket.h
  /usr/include/x86_64-linux-gnu/bits/types/struct_iovec.h
  /usr/include/x86_64-linux-gnu/bits/socket.h
@@ -232,24 +231,6 @@ Client/CMakeFiles/Client.dir/src/Client.cpp.o
  /usr/include/x86_64-linux-gnu/bits/getopt_core.h
  /usr/include/x86_64-linux-gnu/bits/unistd_ext.h
  /usr/include/linux/close_range.h
- /usr/include/c++/11/vector
- /usr/include/c++/11/bits/stl_uninitialized.h
- /usr/include/c++/11/bits/stl_vector.h
- /usr/include/c++/11/bits/stl_bvector.h
- /usr/include/c++/11/bits/vector.tcc
- /usr/include/c++/11/array
- /usr/include/c++/11/utility
- /usr/include/c++/11/bits/stl_relops.h
- /usr/include/c++/11/map
- /usr/include/c++/11/bits/stl_tree.h
- /usr/include/c++/11/ext/aligned_buffer.h
- /usr/include/c++/11/bits/node_handle.h
- /usr/include/c++/11/bits/stl_map.h
- /usr/include/c++/11/tuple
- /usr/include/c++/11/bits/uses_allocator.h
- /usr/include/c++/11/bits/invoke.h
- /usr/include/c++/11/bits/stl_multimap.h
- /usr/include/c++/11/bits/erase_if.h
 
 Client/CMakeFiles/Client.dir/src/main.cpp.o
  /home/user/Desktop/Final_task/Client/src/main.cpp
@@ -445,7 +426,6 @@ Client/CMakeFiles/Client.dir/src/main.cpp.o
  /usr/include/c++/11/bits/ostream.tcc
  /usr/include/c++/11/istream
  /usr/include/c++/11/bits/istream.tcc
- /usr/include/x86_64-linux-gnu/sys/time.h
  /usr/include/x86_64-linux-gnu/sys/socket.h
  /usr/include/x86_64-linux-gnu/bits/types/struct_iovec.h
  /usr/include/x86_64-linux-gnu/bits/socket.h
@@ -482,22 +462,4 @@ Client/CMakeFiles/Client.dir/src/main.cpp.o
  /usr/include/x86_64-linux-gnu/bits/getopt_core.h
  /usr/include/x86_64-linux-gnu/bits/unistd_ext.h
  /usr/include/linux/close_range.h
- /usr/include/c++/11/vector
- /usr/include/c++/11/bits/stl_uninitialized.h
- /usr/include/c++/11/bits/stl_vector.h
- /usr/include/c++/11/bits/stl_bvector.h
- /usr/include/c++/11/bits/vector.tcc
- /usr/include/c++/11/array
- /usr/include/c++/11/utility
- /usr/include/c++/11/bits/stl_relops.h
- /usr/include/c++/11/map
- /usr/include/c++/11/bits/stl_tree.h
- /usr/include/c++/11/ext/aligned_buffer.h
- /usr/include/c++/11/bits/node_handle.h
- /usr/include/c++/11/bits/stl_map.h
- /usr/include/c++/11/tuple
- /usr/include/c++/11/bits/uses_allocator.h
- /usr/include/c++/11/bits/invoke.h
- /usr/include/c++/11/bits/stl_multimap.h
- /usr/include/c++/11/bits/erase_if.h
 

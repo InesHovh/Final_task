@@ -25,8 +25,8 @@ public:
     // bool CreateUsersTable();
     // bool CreateMsgsTable();
 
-    // void CheckDB();
-    // void AddUser();
+    void CheckDB();
+    void AddUser(std::string username, std::string password);
 
     // void AddMsg();
     // void PutMsg();

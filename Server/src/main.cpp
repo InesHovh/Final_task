@@ -2,14 +2,9 @@
 
 
 int main() {
-    Server server("1234");
-    // Database database("mydb", "ines", "pass", "localhost", "5432");
-    // server.Start();
+    Server server("1245");
+    Database database("mydb", "ines", "pass", "localhost", "5432");
 
-    // server.ConnectionToDB(database);
-    // database.CreateUsersTable();
-    // database.CreateMsgsTable();
-
-    // server.DisconnectClient();
+    server.ConnectionToDB(database);
     return 0;
 }

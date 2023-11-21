@@ -3,20 +3,29 @@
 Database::Database(const std::string dbname, const std::string user,
             const std::string password, const std::string host,
             const std::string port) 
-: m_dbname(dbname), m_user(user), m_password(password), m_host(host), m_port(port) {}
-
-bool Database::ConnectionToServer() {
+: m_dbname(dbname), m_user(user), m_password(password), m_host(host), m_port(port){
+    
     try
     {
-        m_connection.reset(new pqxx::connection(
+        m_connection = std::make_unique<pqxx::connection>(
             "dbname=" + m_dbname +
             " user=" + m_user +
             " password=" + m_password +
             " host=" + m_host +
-            " port=" + m_port
-        ));
-        // std::string params = "host=localhost port=5432 dbname=mydb user=ines password=pass";
+            " port=" + m_port );
+        
+        // if (!m_connection)
+        //     throw std::runtime_error("Error: Databse connection");
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << "Error creating pqxx::connection " << e.what() << std::endl;
+    }    
+}
 
+bool Database::ConnectionToServer() {
+    try
+    {
         if (m_connection->is_open()) {
             std::cout << "Connected to the database " << std::endl;
             return true;
@@ -33,70 +42,33 @@ bool Database::ConnectionToServer() {
     }
 }
 
-// bool Database::CreateUsersTable() {
+void Database::CheckDB() {}
+
+void Database::AddUser(std::string username, std::string password) {
+    try
+    {
+        // if(!m_connection->is_open())
+        //     throw std::runtime_error("Error: Database conection is not open");
+        // std::cout << "Bareeev" << std::endl;
+        if (m_connection) {
+            pqxx::work transaction(*m_connection);
+            transaction.exec_params("INSERT INTO Users (username, password) VALUES ($1, $2)",
+                                    username, password);
+            
+            transaction.commit();
+            std::cout << "User " << username << "registered successfully." << std::endl;
+        } else {
+            std::cerr << "Error: m_connection is null" << std::endl;
+        }
+    } catch(const std::exception& e) {
+        std::cerr << "Error adding user to database: " << e.what() << std::endl;
+        std::cerr << "Exception type: " << typeid(e).name() << std::endl;
+    }
     
-//     try
-//     {
-//         // Database connection;
-        
-//         pqxx::work transaction(*m_connection);
+}
 
-//         transaction.exec("CREATE TABLE IF NOT EXISTS Users ("
-//                         "User_id SERIAL PRIMARY KEY, "
-//                         "Username VARCHAR(255) NOT NULL, "
-//                         "Password VARCHAR(255) NOT NULL"
-//                         ")");
-
-//         transaction.commit();
-//         std::cout << "Table 'Users' created successfully " << std::endl;
-//         return true;
-//     } catch(const std::exception& e) {
-//         std::cerr << "Error creating 'Users' table" << e.what() << std::endl;
-//         return false;
-//     }
-// }
-
-// bool Database::CreateMsgsTable() {
-//     try
-//     {
-//         pqxx::work transaction(*m_connection);
-
-//         transaction.exec("CREATE TABLE IF NOT EXISTS Messages ("
-//                         "User_id INT REFERENCES Users(User_id) NOT NULL, "
-//                         "Send_time TIMESTAMP,"
-//                         "Message VARCHAR(500) NOT NULL"
-//                         ")");
-
-//         transaction.commit();
-//         std::cout << "Table 'Messages' created successfully " << std::endl;
-//         return true;
-//     }
-//     catch(const std::exception& e)
-//     {
-//         std::cerr << "Error creating 'Messages' table" << e.what() << std::endl;
-//         return false;
-//     }
-    
-// }
-
-// void Database::CheckDB() {}
-
-// void Database::AddUser() {}
-
-// void Database::AddMsg() {}
+// void Database::AddMsg() {}   
 
 // void Database::PutMsg() {}
 
 Database::~Database() {}
-
-
-// int main(){
-//     Database conn;
-//     conn.ConnectionToServer();
-
-//     std::cout << "Helloooo" << std::endl;
-//     return 0;
-// }
-
-
-

@@ -10,6 +10,8 @@ include_directories(${CMAKE_SOURCE_DIR}/headers)
 
 # target_link_directories(Server PRIVATE path/to/DatabaseLib/build/directory)
 
+set(CMAKE_INSTALL_RPATH /usr/lib/postgresql/16/lib)
+
 set(SERVER_SOURCES
     src/Server.cpp
     src/Database.cpp
@@ -17,5 +19,5 @@ set(SERVER_SOURCES
 
 add_executable(Server ${SERVER_SOURCES})
 
-target_link_libraries(Server PRIVATE pqxx)
+target_link_libraries(Server PRIVATE pqxx pq)
 
