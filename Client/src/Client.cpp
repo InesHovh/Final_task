@@ -1,4 +1,4 @@
-#include "Client.hpp"
+#include "../headers/Client.hpp"
 
 Client::Client() {}
 
@@ -14,28 +14,28 @@ bool Client::Start() {
 
     if (getaddrinfo(m_servaddr, m_port, &clientaddr, &result) < 0) {
         std::cerr << "getaddrinfo error" << std::endl;
-        return false;
+        // return false;
     }
 
     m_clientsock = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
     if (m_clientsock < 0) {
         std::cerr << "Failed to create the socket" << std::endl;
-        freeaddrinfo(result);
-        return false;
+        // freeaddrinfo(result);
+        // return false;
     }
 
     if (connect(m_clientsock, result->ai_addr, result->ai_addrlen) < 0) {
         std::cerr << "Failed to connect to the server" << std::endl;
         close(m_clientsock);
-        freeaddrinfo(result);
-        return false;
+        // freeaddrinfo(result);
+        // return false;
     }
 
-    freeaddrinfo(result);
+    // freeaddrinfo(result);
     return true;
 }
 
-bool Client::SendMsgToServer(std::string msg, size_t size) {
+bool Client::SendMsgToServer(const char* msg, size_t size) {
     if (send(m_clientsock, &msg, size, 0) < 0) {
         
         std::cerr << "Failed to send a message" << std::endl;
@@ -44,20 +44,20 @@ bool Client::SendMsgToServer(std::string msg, size_t size) {
     return true;
 }
 
-bool Client::ReceiveMsgFromServer(std::string buffer, size_t size) {
-    memset(&buffer, 0, size);
+// bool Client::ReceiveMsgFromServer(std::, size_t size) {
+//     memset(&buffer, 0, size);
 
-    int rec = recv(m_clientsock, &buffer, size - 1, 0);
-    if (rec < 0) {
-        std::cerr << "Failed to receive a message" << std::endl;
-        return false;
-    } else if (rec == 0) {
-        std::cout << "Server closed the connection" << std::endl;
-        close(m_clientsock);
-        return false;
-    }
-    return true;
-}
+//     int rec = recv(m_clientsock, &buffer, size - 1, 0);
+//     if (rec < 0) {
+//         std::cerr << "Failed to receive a message" << std::endl;
+//         return false;
+//     } else if (rec == 0) {
+//         std::cout << "Server closed the connection" << std::endl;
+//         close(m_clientsock);
+//         return false;
+//     }
+//     return true;
+// }
 
 bool Client::SendLoginRequest() {
     user.start_byte = 0xCBAE;
@@ -74,32 +74,57 @@ bool Client::SendLoginRequest() {
     return true;
 }
 
-bool Client::SendRegistrationRequest() {
-    user.start_byte = 0xCBFF;
-    user.username_size = getUsername().size();
-    user.pass_size = getPass().size();
-    user.crc_checksum = 0;
-    
-    AddUser();
-
-    size_t total = sizeof(User);
-
-    if (!SendMsgToServer(reinterpret_cast<char*>(&user), total)) {
-        return false;
+bool Client::SendRegistrationRequest( void ) {
+    User newUser;
+    size_t fields = 1;
+    while (fields <= 2)
+    {
+        if (std::cin.eof())
+            break;
+        if (fields == 1)
+        {
+            std::cout << "Please Enter Your Username: " << std::endl;
+            std::string username;
+            std::getline(std::cin, username);
+            if (!username.empty())
+            {
+                std::memcpy(newUser.username, username.c_str(), std::strlen(username.c_str()));
+                fields++;
+            }
+        }
+        if (fields == 2)
+        {
+            std::string pass;
+            std::cout << "Please Choose Your Password: " << std::endl;
+            std::getline(std::cin, pass);
+            if (!pass.empty())
+            {
+                std::memcpy(newUser.pass, pass.c_str(), std::strlen(pass.c_str()));
+                fields++;
+            }
+        }
     }
 
+    if (fields == 2)
+    {
+        newUser.start_byte = 0XCBFF;
+        newUser.username_size = std::strlen(newUser.username);
+        newUser.pass_size = std::strlen(newUser.pass);
+        newUser.crc_checksum = 12;
+        std::cout << newUser.username << " : " << newUser.pass << std::endl;
+    }
     return true;
 }
 
-bool Client::ReceiveResponse(Response &response) {
-    char buffer[sizeof(Response)];
-    if (!ReceiveMsgFromServer(buffer, sizeof(Response))) {
-        return false;
-    }
+// bool Client::ReceiveResponse(Response &response) {
+//     char buffer[sizeof(Response)];
+//     if (!(buffer, sizeof(Response))) {
+//         return false;
+//     }
 
-    response = *reinterpret_cast<Response*>(buffer);
-    return true;
-}
+//     response = *reinterpret_cast<Response*>(buffer);
+//     return true;
+// }
 
 std::string Client::check_empty_line(std::string str) {
     while (str.length() == 0) {

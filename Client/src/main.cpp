@@ -72,20 +72,25 @@ int main() {
             } else if (command == "Exit" || command == "") {
                 exit(0);
             }
+            else
+            {
+                std::cout << "Please type correect command" << std::endl;
+                continue;
+            }
 
             std::string msg;
             std::string receivedMsg;
             std::cout << "Enter the message to send " << std::endl;
             std::getline(std::cin, msg);
             
-            if (!client.SendMsgToServer(msg, sizeof(msg))) {
-                std::cout << "Disconnecting " << std::endl;
-                break;
-            }
-            if (!client.ReceiveMsgFromServer(receivedMsg, sizeof(receivedMsg))) {
-                std::cout << "Disconnected from server" << std::endl;
-                break;
-            }
+            // if (!client.SendMsgToServer(msg, sizeof(msg))) {
+            //     std::cout << "Disconnecting " << std::endl;
+            //     break;
+            // }
+            // if (!client.ReceiveMsgFromServer(receivedMsg, sizeof(receivedMsg))) {
+            //     std::cout << "Disconnected from server" << std::endl;
+            //     break;
+            // }
 
             std::cout << "Received from server: " << receivedMsg << std::endl;
         } 

@@ -30,11 +30,11 @@ public:
     Client();
     Client(const char *port, const char *servaddr);
     bool Start();
-    bool SendMsgToServer(std::string msg, size_t size);
-    bool ReceiveMsgFromServer(std::string buffer, size_t size);
+    bool SendMsgToServer(const char*msg, size_t size);
+    // bool ReceiveMsgFromServer(std::string buffer, size_t size);
     bool SendLoginRequest();
     bool SendRegistrationRequest();
-    bool ReceiveResponse(Response &response);
+    // bool ReceiveResponse(Response &response);
 
     std::string check_empty_line(std::string str);
 
