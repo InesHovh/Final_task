@@ -3,7 +3,6 @@
 
 Server::Server(const char *port) : m_servsock(-1) {
     init(port);
-    // ConnectionToDB(m_database);
     Start();
 }
 
@@ -26,6 +25,8 @@ void Server::init(const char *port) {
         exit(EXIT_FAILURE);
     }
 
+    fcntl(m_servsock, F_SETFL, O_NONBLOCK);
+
     if (bind(m_servsock, result->ai_addr, result->ai_addrlen) < 0) {
         std::cerr << "Failed to bind" << std::endl;
         close(m_servsock);
@@ -46,8 +47,6 @@ void Server::Start() {
         exit(EXIT_FAILURE);
     }
     std::cout << "Server started. Waiting for connections..." << std::endl;
-
-    fcntl(m_servsock, F_SETFL, O_NONBLOCK);
 
     timeval tv;
 
@@ -72,119 +71,60 @@ void Server::Start() {
                     if (clientsock > m_fdmax) {
                         m_fdmax = clientsock;
                     }
-
                     std::cout << "Connected " << std::endl;
                 } else {
-                    // std::cout << "******************" << std::endl;
-                    if (HandleSignUpRequest(i)) {
-                        std::cout << "Successful registration " << i << std::endl;
-                    }
-                    else if (HandleSignInRequest(i)) {
-                        std::cout << "Successful login " << std::endl;
-                    }
+                    HandleResponse(i);
                 }
             }
         }
     }
 }
 
+void Server::HandleResponse(int clientsock) {
+    // User user;
+    // char buff[sizeof(User)];
+    size_t rec = recv(clientsock, &user, sizeof(user), 0);
 
 
-bool Server::HandleSignUpRequest(int clientSocket) {
-    User user;
-    memset(&user, 0, sizeof(user));
+    auto it = m_client.find(user.username);
 
-    int val = 0;
-    int total = sizeof(User);
-    
-    // std::cout << "hasel em stegh " << std::endl;
-
-
-    // if (rec < 0) {
-        // std::cerr << "Failed to receive register request from client" << std::endl;
-        // return false;
-    // }
-
-    while(val < total) {
-        int rec = recv(clientSocket, reinterpret_cast<char*>(&user) + val, total - val, 0);
-        if (rec <= 0){
-            std::cerr << "Failed to receive register request from client" << std::endl;
-            return false;
+    // std::cout << user.username << "****" << user.pass << std::endl;
+    std::cout << "Start byte:   " << user.start_byte << std::endl;
+    if (rec < 0) {
+        std::cerr << "Error receiving data " << clientsock << std::endl;
+    } else if(rec == 0) {
+        std::cout << "Client " << clientsock << " disconnected" << std::endl;
+        close(clientsock);
+        FD_CLR(clientsock, &m_master);
+        m_clients.erase(clientsock);
+    } else {
+        // std::memcpy(&user, buff, sizeof(User));
+        if (user.start_byte == 0XCBFF){
+            std::cout << "Before Reg:  " << user.username << std::endl;
+            Registration(user.username);
         }
-        val += rec;
-    }
-
-
-    std::string username(user.username, user.username_size);
-    std::string pass(user.pass, user.pass_size);
-
-    // std::memcpy(&user, &user, sizeof(User));
-
-    SignUp(username, pass);
-
-    Response response;
-    if (send(clientSocket, &response.OK, sizeof(response.OK), 0) < 0) {
-        std::cerr << "Failed to send register response to client" << std::endl;
-        return false;
-    }
-
-    return true;
-}
-
-bool Server::HandleSignInRequest(int clientSocket) {
-    User user;
-    char buffer[sizeof(User)];
-    memset(buffer, 0, sizeof(User));
-
-    if (recv(clientSocket, buffer, sizeof(User), 0) < 0) {
-        std::cerr << "Failed to receive Login request from client" << std::endl;
-        return false;
-    }
-
-    std::memcpy(&user, buffer, sizeof(User));
-
-
-    std::string username(user.username, user.username_size);
-    std::string pass(user.pass, user.pass_size);
-
-    bool auth = SignIn(username, pass);
-
-    Response response;
-    if (send(clientSocket, &response.OK, sizeof(response.OK), 0) < 0) {
-        std::cerr << "Failed to send Login response to client" << std::endl;
-        return false;
-    }
-
-    return true;
-}
-
-void Server::SignUp(const std::string &username, const std::string &pass) {
-    // this->m_clients[username] = pass;
-
-    auto it = this->m_clients.find(username);
-    if (it == this->m_clients.end()) {
-        m_database.AddUser(username, pass);
-        std::cout << "hiiii " << std::endl;
-        this->m_clients[username] = pass;
-        std::cout << "User   " << username << "   registered successfully " << std::endl;
-    } else {
-        std::cout << "User " << username << " already have an account" << std::endl;
-    }
-
-}
-
-bool Server::SignIn(const std::string &username, const std::string &pass) {
-    auto it = this->m_clients.find(username);
-
-    if (it != this->m_clients.end() && it->second == pass) {
-        std::cout << "User " << username << " signed in successfully " << std::endl;
-        return true;
-    } else {
-        std::cout << "User " << username << " failed to sign in " << std::endl;
-        return false;
+        else if(user.start_byte == 0xCBAE) {
+            std::cout << "stegh em hasel   " << std::endl;
+            if (it != m_client.end()){
+                std::cout << "You don't have an account, try to register" << std::endl;
+                exit(0);
+            } else {
+                Login(user.username);
+            }
+        }
     }
 }
 
+void Server::Registration(const std::string &user) {
+    std::cout << "Dear " <<   this->user.username << ", you have been successfully registered." << std::endl;
+    m_client.insert(std::make_pair(this->user.username, this->user.pass));
+    // return true;
+}
+
+void Server::Login(const std::string &user) {
+    std::cout << "Dear " << this->user.username << ", you have been logged in successfully." << std::endl;
+    // return true;
+}
 
 void Server::DisconnectClient() {
     std::cout << "Server is disconnecting clients..." << std::endl;
@@ -221,7 +161,6 @@ void Server::ConnectionToDB(Database &database) {
         std::cerr << "Error " << e.what() << std::endl;
     }
     
-
 }
 
 Server::~Server() {

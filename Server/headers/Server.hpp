@@ -11,8 +11,8 @@
 #include <vector>
 #include <array>
 #include <fcntl.h>
+#include <set>
 #include "Database.hpp"
-// #include <crc32c/crc32c.h>
 #include "../../Client/headers/Client.hpp"
 
 struct Updatemsg {
@@ -41,14 +41,12 @@ private:
     int m_servsock;
     fd_set m_master;
     int m_fdmax;
+    std::set<int> m_clients;
 
     Database m_database;
 
-    std::map<std::string, std::string> m_clients;
-
-private:
-    bool HandleSignUpRequest(int clientsock);
-    bool HandleSignInRequest(int clientsock);
+    User user;
+    std::map<std::string, std::string> m_client;
 public:
     Server() {};
     Server(const char *port);
@@ -56,11 +54,13 @@ public:
     void init(const char *port);
     void Start();
 
+    void HandleResponse(int clientsock);
+
+    void Registration(const std::string &user);
+    void Login(const std::string &user);
+
     void ConnectionToDB(Database &database);
     void DisconnectClient();
-
-    void SignUp(const std::string &username, const std::string &pass);
-    bool SignIn(const std::string &username, const std::string &pass);
 
     ~Server();
 };

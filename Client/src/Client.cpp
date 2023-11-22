@@ -14,138 +14,107 @@ bool Client::Start() {
 
     if (getaddrinfo(m_servaddr, m_port, &clientaddr, &result) < 0) {
         std::cerr << "getaddrinfo error" << std::endl;
-        // return false;
     }
 
     m_clientsock = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
     if (m_clientsock < 0) {
         std::cerr << "Failed to create the socket" << std::endl;
-        // freeaddrinfo(result);
-        // return false;
     }
 
     if (connect(m_clientsock, result->ai_addr, result->ai_addrlen) < 0) {
         std::cerr << "Failed to connect to the server" << std::endl;
         close(m_clientsock);
-        // freeaddrinfo(result);
-        // return false;
-    }
-
-    // freeaddrinfo(result);
-    return true;
-}
-
-bool Client::SendMsgToServer(const char* msg, size_t size) {
-    if (send(m_clientsock, &msg, size, 0) < 0) {
-        
-        std::cerr << "Failed to send a message" << std::endl;
-        return false;
-    }
-    return true;
-}
-
-// bool Client::ReceiveMsgFromServer(std::, size_t size) {
-//     memset(&buffer, 0, size);
-
-//     int rec = recv(m_clientsock, &buffer, size - 1, 0);
-//     if (rec < 0) {
-//         std::cerr << "Failed to receive a message" << std::endl;
-//         return false;
-//     } else if (rec == 0) {
-//         std::cout << "Server closed the connection" << std::endl;
-//         close(m_clientsock);
-//         return false;
-//     }
-//     return true;
-// }
-
-bool Client::SendLoginRequest() {
-    user.start_byte = 0xCBAE;
-    user.username_size = getUsername().size();
-    user.pass_size = getPass().size();
-    user.crc_checksum = 0;
-
-    AddUser();
-
-    if (!SendMsgToServer(reinterpret_cast<char*>(&user), sizeof(User))) {
-        return false;
     }
 
     return true;
 }
 
-bool Client::SendRegistrationRequest( void ) {
-    User newUser;
-    size_t fields = 1;
-    while (fields <= 2)
-    {
+void Client::SendMsgToServer(std::string &msg){
+    int snd = send(m_clientsock, &msg, sizeof(msg), 0);
+
+    if (snd < 0) {
+        std::cerr << "Failed to send a message to server" << std::endl;
+    }  else {
+        std::cout << "stegh em " << std::endl;
+    }
+}
+
+void Client::UserInfo(size_t &fields) {
+    while (fields <= 2) {
         if (std::cin.eof())
             break;
-        if (fields == 1)
-        {
+        if (fields == 1) {
             std::cout << "Please Enter Your Username: " << std::endl;
             std::string username;
             std::getline(std::cin, username);
-            if (!username.empty())
-            {
-                std::memcpy(newUser.username, username.c_str(), std::strlen(username.c_str()));
+            if (!username.empty()) {
+                // std::cout << "Username:  " << username << "   ####" << std::endl;
+                std::memcpy(user.username, username.c_str(), username.size());
+                // std::cout << "New Username:  " << user.username << "    *******" << std::endl;
                 fields++;
             }
         }
-        if (fields == 2)
-        {
+        if (fields == 2) {
             std::string pass;
             std::cout << "Please Choose Your Password: " << std::endl;
             std::getline(std::cin, pass);
-            if (!pass.empty())
-            {
-                std::memcpy(newUser.pass, pass.c_str(), std::strlen(pass.c_str()));
+            if (!pass.empty()) {
+                std::memcpy(user.pass, pass.c_str(), pass.size());
                 fields++;
             }
         }
     }
+}
 
-    if (fields == 2)
-    {
-        newUser.start_byte = 0XCBFF;
-        newUser.username_size = std::strlen(newUser.username);
-        newUser.pass_size = std::strlen(newUser.pass);
-        newUser.crc_checksum = 12;
-        std::cout << newUser.username << " : " << newUser.pass << std::endl;
+void Client::Response() {
+
+}
+
+bool Client::SendRegistrationRequest() {
+    size_t fields = 1;
+    UserInfo(fields);
+    
+    std::cout << fields << std::endl;
+
+    if (fields == 3) {
+        user.start_byte = 0XCBFF;
+        user.username_size = std::strlen(user.username);
+        user.pass_size = std::strlen(user.pass);
+        user.crc_checksum = sizeof(user);
+        std::cout << user.username << " : " << user.pass << std::endl;
     }
+
+    int snd = send(m_clientsock, &user, sizeof(user), 0);
+    if(snd < 0)
+        std::cerr << "Failed to send request " << std::endl;
+    // else 
+    //     std::cout << "success " << std::endl;
+
     return true;
 }
 
-// bool Client::ReceiveResponse(Response &response) {
-//     char buffer[sizeof(Response)];
-//     if (!(buffer, sizeof(Response))) {
-//         return false;
-//     }
 
-//     response = *reinterpret_cast<Response*>(buffer);
-//     return true;
-// }
 
-std::string Client::check_empty_line(std::string str) {
-    while (str.length() == 0) {
-        std::cout << "Empty line!\nEnter valid data: ";
-        std::getline(std::cin, str);
+bool Client::SendLoginRequest() {
+    size_t fields = 1;
+    UserInfo(fields);
+
+    // std::memset(&user, 0, sizeof(user));
+    if(fields == 3) {
+        user.start_byte = 0xCBAE;
+        user.username_size = std::strlen(user.username);
+        user.pass_size = std::strlen(user.pass);
+        user.crc_checksum = sizeof(user);
+        std::cout << user.username << " : " << user.pass << std::endl;
     }
-    return (str);
-}
 
-void Client::AddUser() {
-    std::string str;
+    int snd = send(m_clientsock, &user, sizeof(user), 0);
+    if(snd < 0)
+        std::cerr << "Failed to send request " << std::endl;
+    // else 
+    //     std::cout << "success " << std::endl;
 
-    std::cout << "Username: " << std::endl;
-    std::getline(std::cin, str);
-    str = check_empty_line(str);
-    setUsername(str);
-
-    std::cout << "Password: " << std::endl;
-    std::getline(std::cin, str);
-    str = check_empty_line(str);
-    setPass(str);
+    return true;
 }
 
 Client::~Client() {
