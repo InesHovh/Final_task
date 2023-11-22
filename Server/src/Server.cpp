@@ -1,5 +1,6 @@
 #include "../headers/Server.hpp"
 #include "../../Client/headers/Client.hpp"
+#include "Server.hpp"
 
 Server::Server(const char *port) : m_servsock(-1) {
     init(port);

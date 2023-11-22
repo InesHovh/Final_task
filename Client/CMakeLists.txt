@@ -3,10 +3,8 @@ project(Client)
 
 set(CMAKE_CXX_STANDARD 20)
 
-include_directories("${PROJECT_SOURCE_DIR}/headers")
+include_directories(${PROJECT_SOURCE_DIR}/headers)
 
 file(GLOB SRC_FILES "${PROJECT_SOURCE_DIR}/src/*.cpp" )
 
-set(SOURCES ${SRC_FILES})
-
-add_executable(Client ${SOURCES})
+add_executable(${PROJECT_NAME} ${SRC_FILES})

@@ -5,19 +5,18 @@ set(CMAKE_CXX_STANDARD 20)
 
 include_directories(${CMAKE_SOURCE_DIR}/headers)
 
-# add_subdirectory(../DatabaseLib)
-# file(GLOB SERVER_SOURCES "${SMAKE_SOURCE_DIR}/src/*.cpp")
+file(GLOB SRCS "${PROJECT_SOURCE_DIR}/src/*.cpp")
 
-# target_link_directories(Server PRIVATE path/to/DatabaseLib/build/directory)
+add_executable(${PROJECT_NAME} ${SRCS})
 
-set(CMAKE_INSTALL_RPATH /usr/lib/postgresql/16/lib)
+# install conan libs
+execute_process(COMMAND conan install ${PROJECT_SOURCE_DIR}/conanfile.txt --output-folder=${PROJECT_BINARY_DIR} --build=missing)
+include(${PROJECT_BINARY_DIR}/conan_toolchain.cmake)
 
-set(SERVER_SOURCES
-    src/Server.cpp
-    src/Database.cpp
-    src/main.cpp)
+# include 3rdParties libs
+find_package(libpqxx REQUIRED)
 
-add_executable(Server ${SERVER_SOURCES})
+include_directories(${libpqxx_INCLUDE_DIR})
 
-target_link_libraries(Server PRIVATE pqxx pq)
+target_link_libraries(${PROJECT_NAME} PRIVATE libpqxx:libpqxx)
 

@@ -1,8 +1,0 @@
-/home/user/Desktop/Final_task/cmake-build/CMakeFiles/edit_cache.dir
-/home/user/Desktop/Final_task/cmake-build/CMakeFiles/rebuild_cache.dir
-/home/user/Desktop/Final_task/cmake-build/Server/CMakeFiles/Server.dir
-/home/user/Desktop/Final_task/cmake-build/Server/CMakeFiles/edit_cache.dir
-/home/user/Desktop/Final_task/cmake-build/Server/CMakeFiles/rebuild_cache.dir
-/home/user/Desktop/Final_task/cmake-build/Client/CMakeFiles/Client.dir
-/home/user/Desktop/Final_task/cmake-build/Client/CMakeFiles/edit_cache.dir
-/home/user/Desktop/Final_task/cmake-build/Client/CMakeFiles/rebuild_cache.dir
