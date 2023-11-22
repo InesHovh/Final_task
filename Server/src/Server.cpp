@@ -85,6 +85,9 @@ void Server::HandleResponse(int clientsock) {
     // char buff[sizeof(User)];
     size_t rec = recv(clientsock, &user, sizeof(user), 0);
 
+    for(const auto &pair : m_client) {
+        std::cout << pair.first << "   *****  " << pair.second << std::endl; 
+    }
 
     auto it = m_client.find(user.username);
 
@@ -100,8 +103,11 @@ void Server::HandleResponse(int clientsock) {
     } else {
         // std::memcpy(&user, buff, sizeof(User));
         if (user.start_byte == 0XCBFF){
-            std::cout << "Before Reg:  " << user.username << std::endl;
-            Registration(user.username);
+            if (it == m_client.end() /* && it->second == user.pass */)
+                std::cout << "This username already exist. Try to register by another username or login." << std::endl;
+            else
+                // std::cout << "Before Reg:  " << user.username << std::endl;
+                Registration(user.username);
         }
         else if(user.start_byte == 0xCBAE) {
             std::cout << "stegh em hasel   " << std::endl;
