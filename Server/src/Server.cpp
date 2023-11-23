@@ -85,12 +85,6 @@ void Server::HandleResponse(int clientsock) {
     // char buff[sizeof(User)];
     size_t rec = recv(clientsock, &user, sizeof(user), 0);
 
-    for(const auto &pair : m_client) {
-        std::cout << pair.first << "   *****  " << pair.second << std::endl; 
-    }
-
-    auto it = m_client.find(user.username);
-
     // std::cout << user.username << "****" << user.pass << std::endl;
     std::cout << "Start byte:   " << user.start_byte << std::endl;
     if (rec < 0) {
@@ -103,19 +97,29 @@ void Server::HandleResponse(int clientsock) {
     } else {
         // std::memcpy(&user, buff, sizeof(User));
         if (user.start_byte == 0XCBFF){
-            if (it == m_client.end() /* && it->second == user.pass */)
-                std::cout << "This username already exist. Try to register by another username or login." << std::endl;
-            else
-                // std::cout << "Before Reg:  " << user.username << std::endl;
+            if(m_client.empty())
                 Registration(user.username);
+            // auto it = m_client.find(user.username);
+            else {
+                for(auto it = m_client.begin(); it != m_client.end(); ++it){
+                    if (it->first == user.username && it->second == user.pass){
+                        std::cout << "This account already exist. Try to register by another username or login." << std::endl;
+                        exit(0);
+                    }
+                    else
+                        Registration(user.username);
+                }
+            }
         }
         else if(user.start_byte == 0xCBAE) {
-            std::cout << "stegh em hasel   " << std::endl;
-            if (it != m_client.end()){
-                std::cout << "You don't have an account, try to register" << std::endl;
-                exit(0);
-            } else {
-                Login(user.username);
+            for(auto it = m_client.begin(); it != m_client.end(); ++it) {
+                if(it->first == user.username && it->second != user.pass){
+                    std::cout << "Incorrect password. Please check it or try to create a new account." << std::endl;
+                    exit(0);
+                } else {
+                    Login(user.username);
+                }
+                
             }
         }
     }
@@ -124,11 +128,22 @@ void Server::HandleResponse(int clientsock) {
 void Server::Registration(const std::string &user) {
     std::cout << "Dear " <<   this->user.username << ", you have been successfully registered." << std::endl;
     m_client.insert(std::make_pair(this->user.username, this->user.pass));
+
+    // for(const auto &pair : m_client) {
+    //     // auto it = m_client.find(user.username);
+    //     std::cout << "Key:  " << pair.first << ",  Value:  " << pair.second << std::endl;
+    // }
     // return true;
 }
 
 void Server::Login(const std::string &user) {
     std::cout << "Dear " << this->user.username << ", you have been logged in successfully." << std::endl;
+
+    // for(const auto &pair : m_client) {
+        // auto it = m_client.find(user.username);
+    //     std::cout << "Key:  " << pair.first << ",  Value:  " << pair.second << std::endl;
+    // }
+
     // return true;
 }
 

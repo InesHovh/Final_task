@@ -58,7 +58,7 @@ private:
     const char *m_port;
     const char *m_servaddr;
     bool m_reg;
-    User user;
+    User user{};
 };
 
 #endif // Client.hpp

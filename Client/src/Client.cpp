@@ -72,6 +72,7 @@ void Client::Response() {
 
 bool Client::SendRegistrationRequest() {
     size_t fields = 1;
+    // std::memset(&user, 0, sizeof(user));
     UserInfo(fields);
     
     std::cout << fields << std::endl;
