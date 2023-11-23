@@ -128,6 +128,14 @@ bool Client::SendLoginRequest() {
     return true;
 }
 
+// void Client::SendMsg(std::string &username, std::string &msg) {
+
+// }
+
+// void Client::GetAllMsgs() {
+
+// }
+
 Client::~Client() {
     if (m_clientsock >= 0) {
         close(m_clientsock);

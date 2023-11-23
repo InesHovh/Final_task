@@ -43,11 +43,15 @@ public:
     Client();
     Client(const char *port, const char *servaddr);
     bool Start();
+
+    void SendMsgToServer(std::string &msg);
+
     void UserInfo(size_t &fields);
     bool SendLoginRequest();
     bool SendRegistrationRequest();
 
-    void SendMsgToServer(std::string &msg);
+    // void SendMsg(std::string &username, std::string &msg);
+    // void GetAllMsgs();
     
     ~Client();
 public:
