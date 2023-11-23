@@ -1,7 +1,7 @@
 #include "../headers/Client.hpp"
 
 int main() {
-    Client client("1245", "127.0.0.1");
+    Client client("1234", "127.0.0.1");
 
     if (client.Start()) {
         std::cout << "Connected to the server. \n";

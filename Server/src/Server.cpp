@@ -81,11 +81,9 @@ void Server::Start() {
 }
 
 void Server::HandleResponse(int clientsock) {
-    // User user;
-    // char buff[sizeof(User)];
+    Response resp;
     size_t rec = recv(clientsock, &user, sizeof(user), 0);
 
-    // std::cout << user.username << "****" << user.pass << std::endl;
     std::cout << "Start byte:   " << user.start_byte << std::endl;
     if (rec < 0) {
         std::cerr << "Error receiving data " << clientsock << std::endl;
@@ -95,32 +93,38 @@ void Server::HandleResponse(int clientsock) {
         FD_CLR(clientsock, &m_master);
         m_clients.erase(clientsock);
     } else {
-        // std::memcpy(&user, buff, sizeof(User));
         if (user.start_byte == 0XCBFF){
-            if(m_client.empty())
+            if(m_client.empty()){
+                std::cout << "stegh em  " << std::endl;
                 Registration(user.username);
-            // auto it = m_client.find(user.username);
+            }
             else {
-                for(auto it = m_client.begin(); it != m_client.end(); ++it){
-                    if (it->first == user.username && it->second == user.pass){
-                        std::cout << "This account already exist. Try to register by another username or login." << std::endl;
-                        exit(0);
-                    }
-                    else
-                        Registration(user.username);
+                auto it = m_client.find(user.username);
+                if (it != m_client.end() && it->first == user.username && it->second == user.pass) {
+                    int snd = send(m_fdmax, &resp.ERROR, sizeof(resp.ERROR), 0);
+                    std::cout << "This account already exist. Try to register by another username or login." << std::endl;
+                    if(snd < 0)
+                        std::cout << "Failed to send ERROR response for registration";
+                }
+                else {
+                    Registration(user.username);
+                    send(m_fdmax, &resp.OK, sizeof(resp.OK), 0);
+                    std::cout << "Sent OK msg to the client " << std::endl;
                 }
             }
         }
         else if(user.start_byte == 0xCBAE) {
-            for(auto it = m_client.begin(); it != m_client.end(); ++it) {
-                if(it->first == user.username && it->second != user.pass){
-                    std::cout << "Incorrect password. Please check it or try to create a new account." << std::endl;
-                    exit(0);
-                } else {
-                    Login(user.username);
-                }
-                
-            }
+            auto it = m_client.find(user.username);
+            if(it != m_client.end() && it->first == user.username && it->second != user.pass) {
+                std::cout << "Incorrect password. Please check it or try to create a new account." << std::endl;
+                int snd = send(m_fdmax, &resp.ERROR, sizeof(resp.ERROR), 0);
+                if(snd < 0)
+                    std::cerr << "Failed to send ERROR response for login" << std::endl;
+            }                
+            else {
+                Login(user.username);
+                send(m_fdmax, &resp.OK, sizeof(resp.OK), 0);
+            }         
         }
     }
 }
@@ -128,23 +132,10 @@ void Server::HandleResponse(int clientsock) {
 void Server::Registration(const std::string &user) {
     std::cout << "Dear " <<   this->user.username << ", you have been successfully registered." << std::endl;
     m_client.insert(std::make_pair(this->user.username, this->user.pass));
-
-    // for(const auto &pair : m_client) {
-    //     // auto it = m_client.find(user.username);
-    //     std::cout << "Key:  " << pair.first << ",  Value:  " << pair.second << std::endl;
-    // }
-    // return true;
 }
 
 void Server::Login(const std::string &user) {
     std::cout << "Dear " << this->user.username << ", you have been logged in successfully." << std::endl;
-
-    // for(const auto &pair : m_client) {
-        // auto it = m_client.find(user.username);
-    //     std::cout << "Key:  " << pair.first << ",  Value:  " << pair.second << std::endl;
-    // }
-
-    // return true;
 }
 
 void Server::DisconnectClient() {
@@ -181,7 +172,6 @@ void Server::ConnectionToDB(Database &database) {
     {
         std::cerr << "Error " << e.what() << std::endl;
     }
-    
 }
 
 Server::~Server() {

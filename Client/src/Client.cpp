@@ -32,10 +32,16 @@ bool Client::Start() {
 void Client::SendMsgToServer(std::string &msg){
     int snd = send(m_clientsock, &msg, sizeof(msg), 0);
 
-    if (snd < 0) {
-        std::cerr << "Failed to send a message to server" << std::endl;
-    }  else {
-        std::cout << "stegh em " << std::endl;
+    if (snd <= 0){
+        if (snd == 0) {
+            std::cerr << "Server disconnected " << std::endl;
+        }  else {
+            std::cerr << "Failed to send a message to server" << std::endl;
+        }
+        close(m_clientsock);
+        m_clientsock = -1;
+    } else {
+        std::cout << "Message sent successfully" << std::endl;
     }
 }
 
@@ -48,9 +54,7 @@ void Client::UserInfo(size_t &fields) {
             std::string username;
             std::getline(std::cin, username);
             if (!username.empty()) {
-                // std::cout << "Username:  " << username << "   ####" << std::endl;
                 std::memcpy(user.username, username.c_str(), username.size());
-                // std::cout << "New Username:  " << user.username << "    *******" << std::endl;
                 fields++;
             }
         }
@@ -66,13 +70,9 @@ void Client::UserInfo(size_t &fields) {
     }
 }
 
-void Client::Response() {
-
-}
-
 bool Client::SendRegistrationRequest() {
     size_t fields = 1;
-    // std::memset(&user, 0, sizeof(user));
+    Response resp;
     UserInfo(fields);
     
     std::cout << fields << std::endl;
@@ -88,9 +88,14 @@ bool Client::SendRegistrationRequest() {
     int snd = send(m_clientsock, &user, sizeof(user), 0);
     if(snd < 0)
         std::cerr << "Failed to send request " << std::endl;
-    // else 
-    //     std::cout << "success " << std::endl;
-
+    else {
+        uint8_t res;
+        int rec = recv(m_clientsock, &res, sizeof(res), 0);
+        if (res == resp.OK)
+            std::cout << "Received message OK:   " << std::endl;
+        else if(res == resp.ERROR)
+            std::cout << "Received message ERROR:   " << std::endl;
+    }
     return true;
 }
 
@@ -98,9 +103,9 @@ bool Client::SendRegistrationRequest() {
 
 bool Client::SendLoginRequest() {
     size_t fields = 1;
+    Response resp;
     UserInfo(fields);
 
-    // std::memset(&user, 0, sizeof(user));
     if(fields == 3) {
         user.start_byte = 0xCBAE;
         user.username_size = std::strlen(user.username);
@@ -112,9 +117,14 @@ bool Client::SendLoginRequest() {
     int snd = send(m_clientsock, &user, sizeof(user), 0);
     if(snd < 0)
         std::cerr << "Failed to send request " << std::endl;
-    // else 
-    //     std::cout << "success " << std::endl;
-
+    else {
+        uint8_t res;
+        int rec = recv(m_clientsock, &res, sizeof(res), 0);
+        if (res == resp.OK)
+            std::cout << "Received message OK:   " << rec << std::endl;
+        else if(res == resp.ERROR)
+            std::cout << "Received message ERROR:   " << rec << std::endl;
+    }
     return true;
 }
 

@@ -47,8 +47,6 @@ public:
     bool SendLoginRequest();
     bool SendRegistrationRequest();
 
-    void Response();
-
     void SendMsgToServer(std::string &msg);
     
     ~Client();
