@@ -15,6 +15,8 @@
 #include "Database.hpp"
 #include "../../Client/headers/Client.hpp"
 
+// struct User;
+
 struct Updatemsg {
     uint16_t    start_byte;
     uint16_t    packet_counts;
@@ -54,10 +56,13 @@ public:
     void init(const char *port);
     void Start();
 
+    std::map<std::string, std::string> getClients() const {  return m_client; }
+    void setClients(std::map<std::string, std::string> &client) { m_client = client; }
+
     void HandleResponse(int clientsock);
 
-    void Registration(const std::string &user);
-    void Login(const std::string &user);
+    void Registration(const std::string &usr);
+    void Login(const std::string &usr);
 
     void ConnectionToDB(Database &database);
     void DisconnectClient();

@@ -84,7 +84,6 @@ void Server::HandleResponse(int clientsock) {
     Response resp;
     size_t rec = recv(clientsock, &user, sizeof(user), 0);
 
-    std::cout << "Start byte:   " << user.start_byte << std::endl;
     if (rec < 0) {
         std::cerr << "Error receiving data " << clientsock << std::endl;
     } else if(rec == 0) {
@@ -95,7 +94,6 @@ void Server::HandleResponse(int clientsock) {
     } else {
         if (user.start_byte == 0XCBFF){
             if(m_client.empty()){
-                std::cout << "stegh em  " << std::endl;
                 Registration(user.username);
             }
             else {
@@ -109,22 +107,38 @@ void Server::HandleResponse(int clientsock) {
                 else {
                     Registration(user.username);
                     send(m_fdmax, &resp.OK, sizeof(resp.OK), 0);
-                    std::cout << "Sent OK msg to the client " << std::endl;
                 }
             }
         }
         else if(user.start_byte == 0xCBAE) {
-            auto it = m_client.find(user.username);
-            if(it != m_client.end() && it->first == user.username && it->second != user.pass) {
-                std::cout << "Incorrect password. Please check it or try to create a new account." << std::endl;
+            int i = 0;
+            
+            if(m_client.empty()) {
+                std::cout << "You're not registered. Please register before it." << std::endl;
+                Registration(user.username);
+            }
+                
+            while(i <= 2){
+                auto it = m_client.find(user.username);
+                if(it != m_client.end() && it->first == user.username && it->second != user.pass) {
+                    std::cout << "Incorrect password. Please check it or try to create a new account." << std::endl;
+                    ++i;
+                if(i == 2)
+                    exit(1);
+                else {
+                    Login(user.username);
+                    send(m_fdmax, &resp.OK, sizeof(resp.OK), 0);
+                    }
+                }
                 int snd = send(m_fdmax, &resp.ERROR, sizeof(resp.ERROR), 0);
                 if(snd < 0)
                     std::cerr << "Failed to send ERROR response for login" << std::endl;
-            }                
-            else {
-                Login(user.username);
-                send(m_fdmax, &resp.OK, sizeof(resp.OK), 0);
-            }         
+            }
+            // }              
+            // else {
+            //     Login(user.username);
+            //     send(m_fdmax, &resp.OK, sizeof(resp.OK), 0);
+            // }         
         }
     }
 }

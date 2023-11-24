@@ -1,0 +1,6 @@
+[requires]
+libpqxx/7.8.1
+
+[generators]
+CMakeDeps
+CMakeToolchain

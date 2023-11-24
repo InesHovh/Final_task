@@ -3,7 +3,7 @@
 Client::Client() {}
 
 Client::Client(const char *port, const char *servaddr)
-    : m_port(port), m_servaddr(servaddr), m_clientsock(-1) {}
+    : m_port(port), m_servaddr(servaddr), m_clientsock(-1), m_active(false) {}
 
 bool Client::Start() {
     struct addrinfo clientaddr, *result;
@@ -82,7 +82,6 @@ bool Client::SendRegistrationRequest() {
         user.username_size = std::strlen(user.username);
         user.pass_size = std::strlen(user.pass);
         user.crc_checksum = sizeof(user);
-        std::cout << user.username << " : " << user.pass << std::endl;
     }
 
     int snd = send(m_clientsock, &user, sizeof(user), 0);
@@ -91,10 +90,16 @@ bool Client::SendRegistrationRequest() {
     else {
         uint8_t res;
         int rec = recv(m_clientsock, &res, sizeof(res), 0);
-        if (res == resp.OK)
-            std::cout << "Received message OK:   " << std::endl;
-        else if(res == resp.ERROR)
-            std::cout << "Received message ERROR:   " << std::endl;
+        if (res == resp.OK){
+            std::cout << "You have successfully registered and logged in to your account. " << std::endl;
+            m_active = true;
+            return true;
+        }
+        else if(res == resp.ERROR){
+            std::cout << "Failed to register " << std::endl;
+            m_active = false;
+            return true;
+        }
     }
     return true;
 }
@@ -103,7 +108,15 @@ bool Client::SendRegistrationRequest() {
 
 bool Client::SendLoginRequest() {
     size_t fields = 1;
+    int i = 0;
     Response resp;
+
+    if(m_server.getClients().empty()) {
+        std::cout << "You're not registered. Please register before it." << std::endl;
+        SendRegistrationRequest();
+        return false;
+    }
+
     UserInfo(fields);
 
     if(fields == 3) {
@@ -111,19 +124,26 @@ bool Client::SendLoginRequest() {
         user.username_size = std::strlen(user.username);
         user.pass_size = std::strlen(user.pass);
         user.crc_checksum = sizeof(user);
-        std::cout << user.username << " : " << user.pass << std::endl;
     }
 
     int snd = send(m_clientsock, &user, sizeof(user), 0);
-    if(snd < 0)
-        std::cerr << "Failed to send request " << std::endl;
-    else {
-        uint8_t res;
-        int rec = recv(m_clientsock, &res, sizeof(res), 0);
-        if (res == resp.OK)
-            std::cout << "Received message OK:   " << rec << std::endl;
-        else if(res == resp.ERROR)
-            std::cout << "Received message ERROR:   " << rec << std::endl;
+    while(i < 3){
+        if(snd < 0)
+            std::cerr << "Failed to send request " << std::endl;
+        else {
+            uint8_t res;
+            int rec = recv(m_clientsock, &res, sizeof(res), 0);
+            if (res == resp.OK) {
+                std::cout << "You are logged in successfully. " << std::endl;
+                return true;
+            }
+            else if(res == resp.ERROR){
+                std::cout << "Failed to login. Try again." << std::endl;
+                ++i;
+                // return false;
+            }
+        }
+        return false;
     }
     return true;
 }

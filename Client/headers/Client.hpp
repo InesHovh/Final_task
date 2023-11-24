@@ -10,6 +10,8 @@
 #include <string>
 #include <unistd.h>
 #include <stdint.h>
+#include "../../Server/headers/Server.hpp"
+
 
 struct User {
     uint16_t    start_byte;
@@ -60,6 +62,9 @@ private:
     const char *m_port;
     const char *m_servaddr;
     bool m_reg;
+
+    bool m_active;
+    Server m_server;
     User user{};
 };
 
