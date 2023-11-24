@@ -3,7 +3,7 @@
 Client::Client() {}
 
 Client::Client(const char *port, const char *servaddr)
-    : m_port(port), m_servaddr(servaddr), m_clientsock(-1), m_active(false) {}
+    : m_port(port), m_servaddr(servaddr), m_clientsock(-1), m_active(false), m_server() {}
 
 bool Client::Start() {
     struct addrinfo clientaddr, *result;
@@ -24,9 +24,11 @@ bool Client::Start() {
     if (connect(m_clientsock, result->ai_addr, result->ai_addrlen) < 0) {
         std::cerr << "Failed to connect to the server" << std::endl;
         close(m_clientsock);
-    }
+        m_active = false;
+    } else
+        m_active = true;
 
-    return true;
+    return m_active;
 }
 
 void Client::SendMsgToServer(std::string &msg){
@@ -35,6 +37,7 @@ void Client::SendMsgToServer(std::string &msg){
     if (snd <= 0){
         if (snd == 0) {
             std::cerr << "Server disconnected " << std::endl;
+            m_active = false;
         }  else {
             std::cerr << "Failed to send a message to server" << std::endl;
         }
@@ -74,8 +77,11 @@ bool Client::SendRegistrationRequest() {
     size_t fields = 1;
     Response resp;
     UserInfo(fields);
-    
-    std::cout << fields << std::endl;
+
+    if(!isActive()) {
+        std::cerr << "Client is not active. Registration request not sent. " << std::endl;
+        return false;
+    }
 
     if (fields == 3) {
         user.start_byte = 0XCBFF;
@@ -93,23 +99,26 @@ bool Client::SendRegistrationRequest() {
         if (res == resp.OK){
             std::cout << "You have successfully registered and logged in to your account. " << std::endl;
             m_active = true;
-            return true;
+            return m_active;
         }
         else if(res == resp.ERROR){
             std::cout << "Failed to register " << std::endl;
             m_active = false;
-            return true;
+            return m_active;
         }
     }
     return true;
 }
 
-
-
 bool Client::SendLoginRequest() {
     size_t fields = 1;
     int i = 0;
     Response resp;
+
+    if(!isActive()) {
+        std::cerr << "Client is not active. Login request not sent. " << std::endl;
+        return false;
+    }
 
     if(m_server.getClients().empty()) {
         std::cout << "You're not registered. Please register before it." << std::endl;
@@ -148,12 +157,17 @@ bool Client::SendLoginRequest() {
     return true;
 }
 
+// void Client::PrivateMsgs() {
+//     auto it = m_server.getClients();
+// }
+
+// void Client::GroupChat() {}
+
 // void Client::SendMsg(std::string &username, std::string &msg) {
 
 // }
 
 // void Client::GetAllMsgs() {
-
 // }
 
 Client::~Client() {

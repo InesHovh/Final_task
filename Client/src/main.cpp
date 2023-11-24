@@ -1,4 +1,5 @@
-#include "../headers/Client.hpp"
+// #include "../headers/Client.hpp"
+#include "../../includes.hpp"
 
 int main() {
     Client client("1245", "127.0.0.1");
@@ -11,24 +12,49 @@ int main() {
         std::cout << "2. Sign In " << std::endl;
         std::cout << "3. Exit " << std::endl;
         std::cout << std::endl;
-        std::cout << "Enter the command or the number : " ;
+        std::cout << "Enter the number of the command : " ;
 
         while(1){
             std::string command;
             std::getline(std::cin, command);
 
-            if (command == "Sign Up" || command == "1")
+            if (command == "1")
             {
                 client.SendRegistrationRequest();
-            } else if (command == "Sign In" || command == "2") {
+            } else if (command == "2") {
                 client.SendLoginRequest();    
             } else if (command == "Exit" || command == "") {
                 exit(0);
             }
             else
             {
-                std::cout << "Please type correect command" << std::endl;
+                std::cout << "Please type correct command." << std::endl;
                 continue;
+            }
+
+            if(client.isActive()) {
+                std::string com;
+
+                std::cout << "Now choose option for chatting: " << std::endl;
+                std::cout << "1. PM " << std::endl;
+                std::cout << "2. Create group chat " << std::endl;
+                std::cout << std::endl;
+                
+                std::cout << "Enter the number of the command: " << std::endl;
+
+                while(1) {
+                    std::getline(std::cin, com);
+
+                    if (com == "1"){
+                        client.PrivateMsgs();
+                    } else if (com == "2") {
+                        client.GroupChat();
+                    } else {
+                        std::cout << "Please type correct command." << std::endl;
+                        continue;
+                    }
+                }
+
             }
 
             // std::string msg;

@@ -1,39 +1,18 @@
-#ifndef CLIENT_HPP
-#define CLIENT_HPP
+// #ifndef CLIENT_HPP
+// #define CLIENT_HPP
+#pragma once
 
-#include <iostream>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <cstring>
-#include <string>
-#include <unistd.h>
-#include <stdint.h>
-#include "../../Server/headers/Server.hpp"
-
-
-struct User {
-    uint16_t    start_byte;
-    uint8_t     username_size;
-    char        username[255];
-    uint8_t     pass_size;
-    char        pass[255];
-    uint16_t    crc_checksum;
-};
-
-struct SendMsg {
-    uint16_t    start_byte;
-    uint8_t     username_size;
-    char        username[255];
-    uint16_t    msg_size;
-    char        msg[500];
-    uint16_t    crc_checksum;
-};
-
-struct GetMsgs {
-    uint16_t    start_byte;
-};
+// #include <iostream>
+// #include <sys/socket.h>
+// #include <netinet/in.h>
+// #include <arpa/inet.h>
+// #include <netdb.h>
+// #include <cstring>
+// #include <string>
+// #include <unistd.h>
+// #include <stdint.h>
+// #include "../../Server/headers/Server.hpp"
+#include "../../includes.hpp"
 
 struct Response {
     uint8_t OK = 0x01;
@@ -52,20 +31,24 @@ public:
     bool SendLoginRequest();
     bool SendRegistrationRequest();
 
+    bool isActive() { return m_active; }
+
+    // void PrivateMsgs();
+    // void GroupChat();
+
     // void SendMsg(std::string &username, std::string &msg);
     // void GetAllMsgs();
     
     ~Client();
 public:
     int m_clientsock;
+    bool m_active;
 private:
     const char *m_port;
     const char *m_servaddr;
-    bool m_reg;
 
-    bool m_active;
     Server m_server;
     User user{};
 };
 
-#endif // Client.hpp
+// #endif // Client.hpp

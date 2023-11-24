@@ -1,5 +1,4 @@
 #include "../headers/Server.hpp"
-#include "../../Client/headers/Client.hpp"
 
 Server::Server(const char *port) : m_servsock(-1) {
     init(port);
@@ -81,6 +80,11 @@ void Server::Start() {
 }
 
 void Server::HandleResponse(int clientsock) {
+    if (!isActive(clientsock)) {
+        std::cerr << "Client " << clientsock << " is not active. Ignoring this request." << std::endl;
+        return;
+    }
+    
     Response resp;
     size_t rec = recv(clientsock, &user, sizeof(user), 0);
 
@@ -89,12 +93,14 @@ void Server::HandleResponse(int clientsock) {
     } else if(rec == 0) {
         std::cout << "Client " << clientsock << " disconnected" << std::endl;
         close(clientsock);
+        // client.m_active = false;
         FD_CLR(clientsock, &m_master);
         m_clients.erase(clientsock);
     } else {
         if (user.start_byte == 0XCBFF){
             if(m_client.empty()){
-                Registration(user.username);
+                Registration(user.username, clientsock);
+                // client.isActive();
             }
             else {
                 auto it = m_client.find(user.username);
@@ -105,7 +111,7 @@ void Server::HandleResponse(int clientsock) {
                         std::cout << "Failed to send ERROR response for registration";
                 }
                 else {
-                    Registration(user.username);
+                    Registration(user.username, clientsock);
                     send(m_fdmax, &resp.OK, sizeof(resp.OK), 0);
                 }
             }
@@ -115,7 +121,7 @@ void Server::HandleResponse(int clientsock) {
             
             if(m_client.empty()) {
                 std::cout << "You're not registered. Please register before it." << std::endl;
-                Registration(user.username);
+                Registration(user.username, clientsock);
             }
                 
             while(i <= 2){
@@ -126,15 +132,14 @@ void Server::HandleResponse(int clientsock) {
                 if(i == 2)
                     exit(1);
                 else {
-                    Login(user.username);
+                    Login(user.username, clientsock);
                     send(m_fdmax, &resp.OK, sizeof(resp.OK), 0);
                     }
                 }
                 int snd = send(m_fdmax, &resp.ERROR, sizeof(resp.ERROR), 0);
                 if(snd < 0)
                     std::cerr << "Failed to send ERROR response for login" << std::endl;
-            }
-            // }              
+            }            
             // else {
             //     Login(user.username);
             //     send(m_fdmax, &resp.OK, sizeof(resp.OK), 0);
@@ -143,13 +148,15 @@ void Server::HandleResponse(int clientsock) {
     }
 }
 
-void Server::Registration(const std::string &user) {
+void Server::Registration(const std::string &user, int clientsock) {
     std::cout << "Dear " <<   this->user.username << ", you have been successfully registered." << std::endl;
+    isActive(clientsock);
     m_client.insert(std::make_pair(this->user.username, this->user.pass));
 }
 
-void Server::Login(const std::string &user) {
+void Server::Login(const std::string &user, int clientsock) {
     std::cout << "Dear " << this->user.username << ", you have been logged in successfully." << std::endl;
+    isActive(clientsock);
 }
 
 void Server::DisconnectClient() {

@@ -1,37 +1,21 @@
-#ifndef SERVER_HPP
-#define SERVER_HPP
+// #ifndef SERVER_HPP
+// #define SERVER_HPP
+#pragma once
 
-#include <iostream>
-#include <cstdlib>
-#include <cstring>
-#include <unistd.h>
-#include <arpa/inet.h>
-#include <sys/types.h>
-#include <netdb.h>
-#include <vector>
-#include <array>
-#include <fcntl.h>
-#include <set>
-#include "Database.hpp"
-#include "../../Client/headers/Client.hpp"
-
-// struct User;
-
-struct Updatemsg {
-    uint16_t    start_byte;
-    uint16_t    packet_counts;
-    uint16_t    crc_checksum;
-};
-
-struct Packet {
-    uint16_t    start_byte;
-    uint32_t    timestamp;
-    uint8_t     username_size;
-    char        username[255];
-    uint16_t    msg_size;
-    char        msg[500];
-    uint16_t    crc_checksum;
-};
+// #include <iostream>
+// #include <cstdlib>
+// #include <cstring>
+// #include <unistd.h>
+// #include <arpa/inet.h>
+// #include <sys/types.h>
+// #include <netdb.h>
+// #include <vector>
+// #include <array>
+// #include <fcntl.h>
+// #include <set>
+// #include "Database.hpp"
+// #include "../../Client/headers/Client.hpp"
+#include "../../includes.hpp"
 
 struct Request {
     uint8_t OK = 0x01;
@@ -47,7 +31,9 @@ private:
 
     Database m_database;
 
+    // Client client;
     User user;
+public:
     std::map<std::string, std::string> m_client;
 public:
     Server() {};
@@ -59,10 +45,12 @@ public:
     std::map<std::string, std::string> getClients() const {  return m_client; }
     void setClients(std::map<std::string, std::string> &client) { m_client = client; }
 
+    bool isActive(int clientsock) { return m_clients.find(clientsock) != m_clients.end(); }
+
     void HandleResponse(int clientsock);
 
-    void Registration(const std::string &usr);
-    void Login(const std::string &usr);
+    void Registration(const std::string &usr, int clientsock);
+    void Login(const std::string &usr, int clientsock);
 
     void ConnectionToDB(Database &database);
     void DisconnectClient();
@@ -70,4 +58,4 @@ public:
     ~Server();
 };
 
-#endif // Server.hpp
+// #endif // Server.hpp

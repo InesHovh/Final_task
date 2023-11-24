@@ -22,8 +22,6 @@ public:
             const std::string port);
 
     bool ConnectionToServer();
-    // bool CreateUsersTable();
-    // bool CreateMsgsTable();
 
     void CheckDB();
     void AddUser(std::string username, std::string password);

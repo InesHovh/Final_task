@@ -14,7 +14,7 @@ Database::Database(const std::string dbname, const std::string user,
             " host=" + m_host +
             " port=" + m_port );
         
-        if (!m_connection)
+        if (!m_connection || !m_connection->is_open())
             throw std::runtime_error("Error: Databse connection");
     }
     catch(const std::exception& e)
