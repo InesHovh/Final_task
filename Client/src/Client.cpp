@@ -1,9 +1,10 @@
 #include "../headers/Client.hpp"
+// #include "../../includes/includes.hpp"
 
 Client::Client() {}
 
 Client::Client(const char *port, const char *servaddr)
-    : m_port(port), m_servaddr(servaddr), m_clientsock(-1), m_active(false), m_server() {}
+    : m_port(port), m_servaddr(servaddr), m_clientsock(-1), m_active(false) {}
 
 bool Client::Start() {
     struct addrinfo clientaddr, *result;
@@ -120,11 +121,14 @@ bool Client::SendLoginRequest() {
         return false;
     }
 
-    if(m_server.getClients().empty()) {
-        std::cout << "You're not registered. Please register before it." << std::endl;
-        SendRegistrationRequest();
-        return false;
-    }
+    std::string sndd;
+    // int newrec = recv(m_clientsock, &sndd.c_str(), sizeof(sndd.c_str()), 0);
+    // std::cout << "Sndd response:   " << newrec.toString() << std::endl;
+    // if(m_server.getClients().empty()) {
+    //     std::cout << "You're not registered. Please register before it." << std::endl;
+    //     SendRegistrationRequest();
+    //     return false;
+    // }
 
     UserInfo(fields);
 

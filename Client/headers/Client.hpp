@@ -12,7 +12,10 @@
 // #include <unistd.h>
 // #include <stdint.h>
 // #include "../../Server/headers/Server.hpp"
-#include "../../includes.hpp"
+#include "../../includes/includes.hpp"
+
+
+// struct Protocol::User;
 
 struct Response {
     uint8_t OK = 0x01;
@@ -47,8 +50,7 @@ private:
     const char *m_port;
     const char *m_servaddr;
 
-    Server m_server;
-    User user{};
+    Protocol::User user;
 };
 
 // #endif // Client.hpp

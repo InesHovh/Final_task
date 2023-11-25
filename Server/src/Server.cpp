@@ -1,4 +1,5 @@
 #include "../headers/Server.hpp"
+// #include "../../includes/includes.hpp"
 
 Server::Server(const char *port) : m_servsock(-1) {
     init(port);
@@ -120,7 +121,10 @@ void Server::HandleResponse(int clientsock) {
             int i = 0;
             
             if(m_client.empty()) {
-                std::cout << "You're not registered. Please register before it." << std::endl;
+                std::string str = "You're not registered. Please register before it.";
+                int sndd = send(clientsock, &str.c_str(), sizeof(str.c_str()), 0);
+                if (sndd < 0)
+                    std::cerr << "Failed to send" << std::endl;
                 Registration(user.username, clientsock);
             }
                 
@@ -133,13 +137,13 @@ void Server::HandleResponse(int clientsock) {
                     exit(1);
                 else {
                     Login(user.username, clientsock);
-                    send(m_fdmax, &resp.OK, sizeof(resp.OK), 0);
+                    send(clientsock, &resp.OK, sizeof(resp.OK), 0);
                     }
                 }
-                int snd = send(m_fdmax, &resp.ERROR, sizeof(resp.ERROR), 0);
+                int snd = send(clientsock, &resp.ERROR, sizeof(resp.ERROR), 0);
                 if(snd < 0)
                     std::cerr << "Failed to send ERROR response for login" << std::endl;
-            }            
+            }      
             // else {
             //     Login(user.username);
             //     send(m_fdmax, &resp.OK, sizeof(resp.OK), 0);
@@ -174,26 +178,26 @@ void Server::DisconnectClient() {
     }
 }
 
-void Server::ConnectionToDB(Database &database) {
-    std::string dbname = "mydb";
-    std::string user = "ines";
-    std::string password = "pass";
-    std::string host = "127.0.0.1";
-    std::string port = "5432";
+// void Server::ConnectionToDB(Database &database) {
+//     std::string dbname = "mydb";
+//     std::string user = "ines";
+//     std::string password = "pass";
+//     std::string host = "127.0.0.1";
+//     std::string port = "5432";
 
-    try
-    {
-        if (database.ConnectionToServer()) {
-            std::cout << "Server connected to DB" << std::endl;
-        } else {
-            throw std::runtime_error("Failed to connect to DB");
-        }
-    }
-    catch(const std::exception& e)
-    {
-        std::cerr << "Error " << e.what() << std::endl;
-    }
-}
+//     try
+//     {
+//         if (database.ConnectionToServer()) {
+//             std::cout << "Server connected to DB" << std::endl;
+//         } else {
+//             throw std::runtime_error("Failed to connect to DB");
+//         }
+//     }
+//     catch(const std::exception& e)
+//     {
+//         std::cerr << "Error " << e.what() << std::endl;
+//     }
+// }
 
 Server::~Server() {
     close(m_servsock);

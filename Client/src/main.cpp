@@ -1,5 +1,5 @@
-// #include "../headers/Client.hpp"
-#include "../../includes.hpp"
+#include "../headers/Client.hpp"
+// #include "../../includes/includes.hpp"
 
 int main() {
     Client client("1245", "127.0.0.1");
@@ -42,18 +42,18 @@ int main() {
                 
                 std::cout << "Enter the number of the command: " << std::endl;
 
-                while(1) {
-                    std::getline(std::cin, com);
+                // while(1) {
+                //     std::getline(std::cin, com);
 
-                    if (com == "1"){
-                        client.PrivateMsgs();
-                    } else if (com == "2") {
-                        client.GroupChat();
-                    } else {
-                        std::cout << "Please type correct command." << std::endl;
-                        continue;
-                    }
-                }
+                //     if (com == "1"){
+                //         client.PrivateMsgs();
+                //     } else if (com == "2") {
+                //         client.GroupChat();
+                //     } else {
+                //         std::cout << "Please type correct command." << std::endl;
+                //         continue;
+                //     }
+                // }
 
             }
 

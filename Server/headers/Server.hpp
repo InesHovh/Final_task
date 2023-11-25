@@ -15,7 +15,7 @@
 // #include <set>
 // #include "Database.hpp"
 // #include "../../Client/headers/Client.hpp"
-#include "../../includes.hpp"
+#include "../../includes/includes.hpp"
 
 struct Request {
     uint8_t OK = 0x01;
@@ -29,10 +29,7 @@ private:
     int m_fdmax;
     std::set<int> m_clients;
 
-    Database m_database;
-
-    // Client client;
-    User user;
+    Protocol::User user;
 public:
     std::map<std::string, std::string> m_client;
 public:
@@ -52,7 +49,7 @@ public:
     void Registration(const std::string &usr, int clientsock);
     void Login(const std::string &usr, int clientsock);
 
-    void ConnectionToDB(Database &database);
+    // void ConnectionToDB(Database &database);
     void DisconnectClient();
 
     ~Server();
