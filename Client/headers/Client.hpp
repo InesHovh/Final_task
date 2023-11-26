@@ -28,13 +28,15 @@ public:
     void SendLoginRequest();
     void SendRegistrationRequest();
 
-    bool isActive() { return m_active; }
+    // bool isActive() { return m_active; }
 
-    // void PrivateMsgs();
-    // void GroupChat();
+    void GetUsersList();
 
-    // void SendMsg(std::string &username, std::string &msg);
-    // void GetAllMsgs();
+    void PrivateMsgs();
+
+    void SendMsg(std::string &username, std::string &msg);
+    
+    void GetAllMsgs();
     
     ~Client();
 public:

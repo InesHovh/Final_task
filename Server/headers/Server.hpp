@@ -32,11 +32,6 @@ public:
     void init(const char *port);
     void Start();
 
-    std::map<std::string, std::string> getClients() const {  return m_client; }
-    void setClients(std::map<std::string, std::string> &client) { m_client = client; }
-
-    bool isActive(int clientsock) { return m_clients.find(clientsock) != m_clients.end(); }
-
     void HandleResponse(int clientsock);
 
     void Registration(const std::string &usr, int clientsock);

@@ -80,11 +80,6 @@ void Server::Start() {
 }
 
 void Server::HandleResponse(int clientsock) {
-    // if (!isActive(clientsock)) {
-    //     std::cerr << "Client " << clientsock << " is not active. Ignoring this request." << std::endl;
-    //     return;
-    // }
-    
     Request req;
     size_t rec = recv(clientsock, &user, sizeof(user), 0);
 
@@ -93,7 +88,6 @@ void Server::HandleResponse(int clientsock) {
     } else if(rec == 0) {
         std::cout << "Client " << clientsock << " disconnected" << std::endl;
         close(clientsock);
-        // client.m_active = false;
         FD_CLR(clientsock, &m_master);
         m_clients.erase(clientsock);
     } else {
@@ -101,11 +95,11 @@ void Server::HandleResponse(int clientsock) {
             if(m_client.empty()){
                 Registration(user.username, clientsock);
                 send(clientsock, &req.OK, sizeof(req.OK), 0);
-                // client.isActive();
             }
             else {
-                auto it = m_client.find(user.username);
-                if (it != m_client.end() && it->first == user.username && it->second == user.pass) {
+                // auto it = m_client.find(user.username);
+                // if (it != m_client.end() && it->first == user.username && it->second == user.pass) 
+                if (CheckDB(user.username, user.pass)){
                     int snd = send(clientsock, &req.ERROR, sizeof(req.ERROR), 0);
                     std::cout << "This account already exist. Try to register by another username or login." << std::endl;
                     if(snd < 0)
@@ -121,17 +115,14 @@ void Server::HandleResponse(int clientsock) {
             int i = 0;
             
             if(m_client.empty()) {
-                // std::string str = "You're not registered. Please register before it.";
-                // int sndd = send(clientsock, &str.c_str(), sizeof(str.c_str()), 0);
-                // if (sndd < 0)
-                //     std::cerr << "Failed to send" << std::endl;
                 Registration(user.username, clientsock);
                 send(clientsock, &req.OK, sizeof(req.OK), 0);
             }
                 
             while(i <= 2){
-                auto it = m_client.find(user.username);
-                if(it != m_client.end() && it->first == user.username && it->second != user.pass) {
+                // auto it = m_client.find(user.username);
+                // if(it != m_client.end() && it->first == user.username && it->second != user.pass) 
+                if (CheckDB(user.username, user.pass)){
                     std::cout << "Incorrect password. Please check it or try to create a new account." << std::endl;
                     ++i;
                 if(i == 2)
@@ -144,24 +135,19 @@ void Server::HandleResponse(int clientsock) {
                 int snd = send(clientsock, &req.ERROR, sizeof(req.ERROR), 0);
                 if(snd < 0)
                     std::cerr << "Failed to send ERROR response for login" << std::endl;
-            }      
-            // else {
-            //     Login(user.username);
-            //     send(m_fdmax, &resp.OK, sizeof(resp.OK), 0);
-            // }         
+            }       
         }
     }
 }
 
 void Server::Registration(const std::string &user, int clientsock) {
     std::cout << "Dear " <<   this->user.username << ", you have been successfully registered." << std::endl;
-    // isActive(clientsock);
-    m_client.insert(std::make_pair(this->user.username, this->user.pass));
+    // m_client.insert(std::make_pair(this->user.username, this->user.pass));
+    AddToDB(usesr.username, user.pass);
 }
 
 void Server::Login(const std::string &user, int clientsock) {
     std::cout << "Dear " << this->user.username << ", you have been logged in successfully." << std::endl;
-    // isActive(clientsock);
 }
 
 void Server::DisconnectClient() {
@@ -199,6 +185,10 @@ void Server::DisconnectClient() {
 //         std::cerr << "Error " << e.what() << std::endl;
 //     }
 // }
+
+void AddToDB(std::string &username, std::string &pass);
+
+bool CheckDB(std::string &username, std::string &pass);
 
 Server::~Server() {
     close(m_servsock);

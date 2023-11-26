@@ -80,11 +80,6 @@ void Client::SendRegistrationRequest() {
     size_t fields = 1;
     Response resp;
     UserInfo(fields);
-
-    // if(!isActive()) {
-    //     std::cerr << "Client is not active. Registration request not sent. " << std::endl;
-    //     return false;
-    // }
     
     if (fields == 3) {
         user.start_byte = 0XCBFF;
@@ -102,27 +97,17 @@ void Client::SendRegistrationRequest() {
         std::cout << "stegh em " << std::endl;
         if (res == resp.OK){
             std::cout << "You have successfully registered and logged in to your account. " << std::endl;
-            m_active = true;
-            // return m_active;
         }
         else if(res == resp.ERROR){
             std::cout << "Failed to register " << std::endl;
-            m_active = false;
-            // return m_active;
         }
     }
-    // return true;
 }
 
 void Client::SendLoginRequest() {
     size_t fields = 1;
     int i = 0;
     Response resp;
-
-    // if(!isActive()) {
-    //     std::cerr << "Client is not active. Login request not sent. " << std::endl;
-    //     return false;
-    // }
 
     UserInfo(fields);
 
@@ -142,31 +127,53 @@ void Client::SendLoginRequest() {
             int rec = recv(m_clientsock, &res, sizeof(res), 0);
             if (res == resp.OK) {
                 std::cout << "You are logged in successfully. " << std::endl;
-                // return true;
             }
             else if(res == resp.ERROR){
                 std::cout << "Failed to login. Try again." << std::endl;
                 ++i;
-                // return false;
             }
         }
-        // return false;
     }
-    // return true;
 }
 
-// void Client::PrivateMsgs() {
-//     auto it = m_server.getClients();
+// 0XCAFE
+
+// if (startbyte == 0XCAFE)
+// {
+//     PGconn* conn = PQconndb();
+
+//     const char *getAllQuery = "SELECT * FROM users";
+
+//     if ()
+//     {
+//         PGresult* res = PQexec();
+
+//     }
+
+//     [
+//         ["1", "dmartiro"],
+//         ["2", "ihovhan"],
+//     ]
+
+//     string user;
+//     user += vec[i][0] +  " " + vec[i][1];
+//     user =  "1 dmartiro";
+//     send(fd, &user.c_str(), user.size(), 0);
+//     user.clear();
 // }
 
-// void Client::GroupChat() {}
+void Client::GetUsersList();
 
-// void Client::SendMsg(std::string &username, std::string &msg) {
 
-// }
+void Client::PrivateMsgs() {
+}
 
-// void Client::GetAllMsgs() {
-// }
+void Client::SendMsg(std::string &username, std::string &msg) {
+
+}
+
+void Client::GetAllMsgs() {
+}
 
 Client::~Client() {
     if (m_clientsock >= 0) {
