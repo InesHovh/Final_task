@@ -1,8 +1,7 @@
 #include "../headers/Client.hpp"
-// #include "../../includes/includes.hpp"
 
 int main() {
-    Client client("1245", "127.0.0.1");
+    Client client("4567", "127.0.0.1");
 
     if (client.Start()) {
         std::cout << "Connected to the server. \n";
@@ -21,8 +20,10 @@ int main() {
             if (command == "1")
             {
                 client.SendRegistrationRequest();
+                // break;
             } else if (command == "2") {
-                client.SendLoginRequest();    
+                client.SendLoginRequest();
+                // break;
             } else if (command == "Exit" || command == "") {
                 exit(0);
             }
@@ -32,15 +33,15 @@ int main() {
                 continue;
             }
 
-            if(client.isActive()) {
-                std::string com;
+            // if(client.isActive()) {
+            //     std::string com;
 
-                std::cout << "Now choose option for chatting: " << std::endl;
-                std::cout << "1. PM " << std::endl;
-                std::cout << "2. Create group chat " << std::endl;
-                std::cout << std::endl;
+            //     std::cout << "Now choose option for chatting: " << std::endl;
+            //     std::cout << "1. PM " << std::endl;
+            //     std::cout << "2. Create group chat " << std::endl;
+            //     std::cout << std::endl;
                 
-                std::cout << "Enter the number of the command: " << std::endl;
+            //     std::cout << "Enter the number of the command: " << std::endl;
 
                 // while(1) {
                 //     std::getline(std::cin, com);
@@ -55,14 +56,14 @@ int main() {
                 //     }
                 // }
 
-            }
+            // }
 
             // std::string msg;
             // std::string receivedMsg;
             // std::cout << "Enter the message to send " << std::endl;
             // std::getline(std::cin, msg);
             
-            // if (!client.SendMsgToServer(msg, sizeof(msg))) {
+            // if (!client.SendMsgToServer(msg)) {
             //     std::cout << "Disconnecting " << std::endl;
             //     break;
             // }

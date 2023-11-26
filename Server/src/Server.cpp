@@ -1,5 +1,4 @@
 #include "../headers/Server.hpp"
-// #include "../../includes/includes.hpp"
 
 Server::Server(const char *port) : m_servsock(-1) {
     init(port);
@@ -81,12 +80,12 @@ void Server::Start() {
 }
 
 void Server::HandleResponse(int clientsock) {
-    if (!isActive(clientsock)) {
-        std::cerr << "Client " << clientsock << " is not active. Ignoring this request." << std::endl;
-        return;
-    }
+    // if (!isActive(clientsock)) {
+    //     std::cerr << "Client " << clientsock << " is not active. Ignoring this request." << std::endl;
+    //     return;
+    // }
     
-    Response resp;
+    Request req;
     size_t rec = recv(clientsock, &user, sizeof(user), 0);
 
     if (rec < 0) {
@@ -101,19 +100,20 @@ void Server::HandleResponse(int clientsock) {
         if (user.start_byte == 0XCBFF){
             if(m_client.empty()){
                 Registration(user.username, clientsock);
+                send(clientsock, &req.OK, sizeof(req.OK), 0);
                 // client.isActive();
             }
             else {
                 auto it = m_client.find(user.username);
                 if (it != m_client.end() && it->first == user.username && it->second == user.pass) {
-                    int snd = send(m_fdmax, &resp.ERROR, sizeof(resp.ERROR), 0);
+                    int snd = send(clientsock, &req.ERROR, sizeof(req.ERROR), 0);
                     std::cout << "This account already exist. Try to register by another username or login." << std::endl;
                     if(snd < 0)
-                        std::cout << "Failed to send ERROR response for registration";
+                        std::cout << "Failed to send ERROR reqonse for registration";
                 }
                 else {
                     Registration(user.username, clientsock);
-                    send(m_fdmax, &resp.OK, sizeof(resp.OK), 0);
+                    send(clientsock, &req.OK, sizeof(req.OK), 0);
                 }
             }
         }
@@ -121,11 +121,12 @@ void Server::HandleResponse(int clientsock) {
             int i = 0;
             
             if(m_client.empty()) {
-                std::string str = "You're not registered. Please register before it.";
-                int sndd = send(clientsock, &str.c_str(), sizeof(str.c_str()), 0);
-                if (sndd < 0)
-                    std::cerr << "Failed to send" << std::endl;
+                // std::string str = "You're not registered. Please register before it.";
+                // int sndd = send(clientsock, &str.c_str(), sizeof(str.c_str()), 0);
+                // if (sndd < 0)
+                //     std::cerr << "Failed to send" << std::endl;
                 Registration(user.username, clientsock);
+                send(clientsock, &req.OK, sizeof(req.OK), 0);
             }
                 
             while(i <= 2){
@@ -137,10 +138,10 @@ void Server::HandleResponse(int clientsock) {
                     exit(1);
                 else {
                     Login(user.username, clientsock);
-                    send(clientsock, &resp.OK, sizeof(resp.OK), 0);
+                    send(clientsock, &req.OK, sizeof(req.OK), 0);
                     }
                 }
-                int snd = send(clientsock, &resp.ERROR, sizeof(resp.ERROR), 0);
+                int snd = send(clientsock, &req.ERROR, sizeof(req.ERROR), 0);
                 if(snd < 0)
                     std::cerr << "Failed to send ERROR response for login" << std::endl;
             }      
@@ -154,13 +155,13 @@ void Server::HandleResponse(int clientsock) {
 
 void Server::Registration(const std::string &user, int clientsock) {
     std::cout << "Dear " <<   this->user.username << ", you have been successfully registered." << std::endl;
-    isActive(clientsock);
+    // isActive(clientsock);
     m_client.insert(std::make_pair(this->user.username, this->user.pass));
 }
 
 void Server::Login(const std::string &user, int clientsock) {
     std::cout << "Dear " << this->user.username << ", you have been logged in successfully." << std::endl;
-    isActive(clientsock);
+    // isActive(clientsock);
 }
 
 void Server::DisconnectClient() {

@@ -1,21 +1,14 @@
-// #ifndef SERVER_HPP
-// #define SERVER_HPP
-#pragma once
+#ifndef SERVER_HPP
+#define SERVER_HPP
+// #pragma once
 
-// #include <iostream>
-// #include <cstdlib>
-// #include <cstring>
-// #include <unistd.h>
-// #include <arpa/inet.h>
-// #include <sys/types.h>
-// #include <netdb.h>
-// #include <vector>
-// #include <array>
-// #include <fcntl.h>
-// #include <set>
-// #include "Database.hpp"
-// #include "../../Client/headers/Client.hpp"
+#include <iostream>
+#include <set>
+#include <map>
 #include "../../includes/includes.hpp"
+// #include "/Users/ihovhann/Desktop/Final_task/includes/includes.hpp"
+
+// using namespace Protocol;
 
 struct Request {
     uint8_t OK = 0x01;
@@ -29,8 +22,8 @@ private:
     int m_fdmax;
     std::set<int> m_clients;
 
-    Protocol::User user;
 public:
+    Protocol::User user;
     std::map<std::string, std::string> m_client;
 public:
     Server() {};
@@ -55,4 +48,4 @@ public:
     ~Server();
 };
 
-// #endif // Server.hpp
+#endif // Server.hpp

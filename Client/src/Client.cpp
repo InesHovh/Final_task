@@ -1,5 +1,4 @@
 #include "../headers/Client.hpp"
-// #include "../../includes/includes.hpp"
 
 Client::Client() {}
 
@@ -32,21 +31,24 @@ bool Client::Start() {
     return m_active;
 }
 
-void Client::SendMsgToServer(std::string &msg){
+bool Client::SendMsgToServer(std::string &msg){
     int snd = send(m_clientsock, &msg, sizeof(msg), 0);
 
     if (snd <= 0){
         if (snd == 0) {
             std::cerr << "Server disconnected " << std::endl;
             m_active = false;
+            return false;
         }  else {
             std::cerr << "Failed to send a message to server" << std::endl;
+            return false;
         }
         close(m_clientsock);
         m_clientsock = -1;
     } else {
         std::cout << "Message sent successfully" << std::endl;
     }
+    return true;
 }
 
 void Client::UserInfo(size_t &fields) {
@@ -74,16 +76,16 @@ void Client::UserInfo(size_t &fields) {
     }
 }
 
-bool Client::SendRegistrationRequest() {
+void Client::SendRegistrationRequest() {
     size_t fields = 1;
     Response resp;
     UserInfo(fields);
 
-    if(!isActive()) {
-        std::cerr << "Client is not active. Registration request not sent. " << std::endl;
-        return false;
-    }
-
+    // if(!isActive()) {
+    //     std::cerr << "Client is not active. Registration request not sent. " << std::endl;
+    //     return false;
+    // }
+    
     if (fields == 3) {
         user.start_byte = 0XCBFF;
         user.username_size = std::strlen(user.username);
@@ -97,36 +99,28 @@ bool Client::SendRegistrationRequest() {
     else {
         uint8_t res;
         int rec = recv(m_clientsock, &res, sizeof(res), 0);
+        std::cout << "stegh em " << std::endl;
         if (res == resp.OK){
             std::cout << "You have successfully registered and logged in to your account. " << std::endl;
             m_active = true;
-            return m_active;
+            // return m_active;
         }
         else if(res == resp.ERROR){
             std::cout << "Failed to register " << std::endl;
             m_active = false;
-            return m_active;
+            // return m_active;
         }
     }
-    return true;
+    // return true;
 }
 
-bool Client::SendLoginRequest() {
+void Client::SendLoginRequest() {
     size_t fields = 1;
     int i = 0;
     Response resp;
 
-    if(!isActive()) {
-        std::cerr << "Client is not active. Login request not sent. " << std::endl;
-        return false;
-    }
-
-    std::string sndd;
-    // int newrec = recv(m_clientsock, &sndd.c_str(), sizeof(sndd.c_str()), 0);
-    // std::cout << "Sndd response:   " << newrec.toString() << std::endl;
-    // if(m_server.getClients().empty()) {
-    //     std::cout << "You're not registered. Please register before it." << std::endl;
-    //     SendRegistrationRequest();
+    // if(!isActive()) {
+    //     std::cerr << "Client is not active. Login request not sent. " << std::endl;
     //     return false;
     // }
 
@@ -148,7 +142,7 @@ bool Client::SendLoginRequest() {
             int rec = recv(m_clientsock, &res, sizeof(res), 0);
             if (res == resp.OK) {
                 std::cout << "You are logged in successfully. " << std::endl;
-                return true;
+                // return true;
             }
             else if(res == resp.ERROR){
                 std::cout << "Failed to login. Try again." << std::endl;
@@ -156,9 +150,9 @@ bool Client::SendLoginRequest() {
                 // return false;
             }
         }
-        return false;
+        // return false;
     }
-    return true;
+    // return true;
 }
 
 // void Client::PrivateMsgs() {

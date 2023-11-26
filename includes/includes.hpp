@@ -17,9 +17,12 @@
 #include <set>
 #include <stdint.h>
 
-#include "../Server/headers/Server.hpp"
-#include "../Client/headers/Client.hpp"
+// #include "../Client/headers/Client.hpp"
+// #include "../Server/headers/Server.hpp"
 // #include "Server/headers/Database.hpp"
+
+// class Server;
+// class Client;
 
 namespace Protocol {
     struct User {
@@ -59,6 +62,6 @@ namespace Protocol {
         char        msg[500];
         uint16_t    crc_checksum;
     };
-};
+}
 
 #endif

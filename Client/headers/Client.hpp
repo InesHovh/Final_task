@@ -1,21 +1,15 @@
-// #ifndef CLIENT_HPP
-// #define CLIENT_HPP
-#pragma once
+#ifndef CLIENT_HPP
+#define CLIENT_HPP
 
-// #include <iostream>
-// #include <sys/socket.h>
-// #include <netinet/in.h>
-// #include <arpa/inet.h>
-// #include <netdb.h>
-// #include <cstring>
-// #include <string>
-// #include <unistd.h>
-// #include <stdint.h>
-// #include "../../Server/headers/Server.hpp"
+#include <iostream>
 #include "../../includes/includes.hpp"
+// #include "../../Server/headers/Server.hpp"
+// #include "/Users/ihovhann/Desktop/Final_task/includes/includes.hpp"
 
 
 // struct Protocol::User;
+// using Protocol;
+
 
 struct Response {
     uint8_t OK = 0x01;
@@ -28,11 +22,11 @@ public:
     Client(const char *port, const char *servaddr);
     bool Start();
 
-    void SendMsgToServer(std::string &msg);
+    bool SendMsgToServer(std::string &msg);
 
     void UserInfo(size_t &fields);
-    bool SendLoginRequest();
-    bool SendRegistrationRequest();
+    void SendLoginRequest();
+    void SendRegistrationRequest();
 
     bool isActive() { return m_active; }
 
@@ -46,11 +40,11 @@ public:
 public:
     int m_clientsock;
     bool m_active;
+    Protocol::User user;
 private:
     const char *m_port;
     const char *m_servaddr;
 
-    Protocol::User user;
 };
 
-// #endif // Client.hpp
+#endif // Client.hpp
