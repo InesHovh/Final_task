@@ -1,7 +1,7 @@
 #include "../headers/Client.hpp"
 
 int main() {
-    Client client("4567", "127.0.0.1");
+    Client client("1245", "127.0.0.1");
 
     if (client.Start()) {
         std::cout << "Connected to the server. \n";
@@ -11,20 +11,21 @@ int main() {
         std::cout << "2. Sign In " << std::endl;
         std::cout << "3. Exit " << std::endl;
         std::cout << std::endl;
-        std::cout << "Enter the number of the command : " ;
 
         while(1){
+            std::cout << "Enter the number of the command : " ;
             std::string command;
             std::getline(std::cin, command);
 
             if (command == "1")
             {
                 client.SendRegistrationRequest();
-                // break;
+                std::cout << "Hasel em " << std::endl;
+                break;
             } else if (command == "2") {
                 client.SendLoginRequest();
-                // break;
-            } else if (command == "Exit" || command == "") {
+                break;
+            } else if (command == "Exit") {
                 exit(0);
             }
             else
@@ -32,30 +33,34 @@ int main() {
                 std::cout << "Please type correct command." << std::endl;
                 continue;
             }
+        }
 
-            // if(client.isActive()) {
-            //     std::string com;
+        while(1){
+            std::cout << "For chatting you must have list of the users " << std::endl;
+            std::cout << "Here is the users: " << std::endl;
+            client.GetUsersList();
+            std::cout << std::endl;
+            std::string user;
+            std::cout << "Type the name of user " << std::endl;
+            std::getline(std::cin, user);
 
-            //     std::cout << "Now choose option for chatting: " << std::endl;
-            //     std::cout << "1. PM " << std::endl;
-            //     std::cout << "2. Create group chat " << std::endl;
-            //     std::cout << std::endl;
-                
-            //     std::cout << "Enter the number of the command: " << std::endl;
+                // std::cout << "Now choose option for chatting: " << std::endl;
 
-                // while(1) {
-                //     std::getline(std::cin, com);
+            // std::cout << "1. PM " << std::endl;
+            // std::cout << "2. Create group chat " << std::endl;
+            // std::cout << std::endl;
+            client.PrivateMsgs(user);
+            // while(1) {
+            //     std::getline(std::cin, com);
 
-                //     if (com == "1"){
-                //         client.PrivateMsgs();
-                //     } else if (com == "2") {
-                //         client.GroupChat();
-                //     } else {
-                //         std::cout << "Please type correct command." << std::endl;
-                //         continue;
-                //     }
-                // }
-
+            //     if (com == "1"){
+            //         client.PrivateMsgs();
+            //     } else if (com == "2") {
+            //         client.GroupChat();
+            //     } else {
+            //         std::cout << "Please type correct command." << std::endl;
+            //         continue;
+            //     }
             // }
 
             // std::string msg;
@@ -73,8 +78,7 @@ int main() {
             // }
 
             // std::cout << "Received from server: " << receivedMsg << std::endl;
-        } 
-
+        }
     } else {
         std::cerr << "Failed to connect to the server.\n";
     }

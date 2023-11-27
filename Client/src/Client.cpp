@@ -162,10 +162,57 @@ void Client::SendLoginRequest() {
 //     user.clear();
 // }
 
-void Client::GetUsersList();
+void Client::GetUsersList() {
+    uint16_t start_byte = 0xCAFE;
+
+    std::cout << "yes aystegh em hima " << std::endl;
+
+    int snd = send(m_clientsock, &start_byte, sizeof(start_byte), 0);
+
+    if (snd < 0) {
+        std::cerr << "Failed to send start_byte to server" << std::endl;
+        return;
+    }
+
+    uint16_t numUsers;
+    size_t rec = recv(m_clientsock, &numUsers, sizeof(numUsers), 0);
 
 
-void Client::PrivateMsgs() {
+    // std::cout << "NumUsers:  " << numUsers << "   *****" << std::endl;
+
+
+    if (rec < 0) {
+        std::cerr << "Error receiving number of users from server" << std::endl;
+        return;
+    }
+
+    for (uint16_t i = 0; i < numUsers; ++i) {
+        size_t len;
+        rec = recv(m_clientsock, &len, sizeof(len), 0);
+        // std::cout << "Len :    " << len << "     #########" << std::endl;
+        if (rec < 0) {
+            std::cerr << "Error receiving username length from server" << std::endl;
+            return;
+        }
+
+        char buffer[len + 1];
+        buffer[len] = '\0';
+
+        rec = recv(m_clientsock, buffer, len, 0);
+
+        if (rec < 0) {
+            std::cerr << "Error receiving username from server" << std::endl;
+            return;
+        }
+
+        std::cout << "User " << i + 1 << "  " << buffer << std::endl;
+    }
+}
+
+
+
+void Client::PrivateMsgs(const std::string &user) {
+
 }
 
 void Client::SendMsg(std::string &username, std::string &msg) {

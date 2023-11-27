@@ -28,11 +28,9 @@ public:
     void SendLoginRequest();
     void SendRegistrationRequest();
 
-    // bool isActive() { return m_active; }
-
     void GetUsersList();
 
-    void PrivateMsgs();
+    void PrivateMsgs(const std::string &user);
 
     void SendMsg(std::string &username, std::string &msg);
     
@@ -42,7 +40,7 @@ public:
 public:
     int m_clientsock;
     bool m_active;
-    Protocol::User user;
+    Protocol::User user{};
 private:
     const char *m_port;
     const char *m_servaddr;

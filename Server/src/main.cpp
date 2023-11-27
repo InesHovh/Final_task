@@ -1,9 +1,9 @@
 #include "../headers/Server.hpp"
 
 int main() {
-    Server server("4567");
-    // Database database("mydb", "ines", "pass", "localhost", "5432");
+    Database database("mydb", "ines", "pass", "127.0.0.1", "5432");
+    Server server("1245", &database);
 
-    // database.ConnectionToServer();
+    server.ConnectionToDB(database);
     return 0;
 }
