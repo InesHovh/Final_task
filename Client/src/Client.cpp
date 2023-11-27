@@ -136,32 +136,6 @@ void Client::SendLoginRequest() {
     }
 }
 
-// 0XCAFE
-
-// if (startbyte == 0XCAFE)
-// {
-//     PGconn* conn = PQconndb();
-
-//     const char *getAllQuery = "SELECT * FROM users";
-
-//     if ()
-//     {
-//         PGresult* res = PQexec();
-
-//     }
-
-//     [
-//         ["1", "dmartiro"],
-//         ["2", "ihovhan"],
-//     ]
-
-//     string user;
-//     user += vec[i][0] +  " " + vec[i][1];
-//     user =  "1 dmartiro";
-//     send(fd, &user.c_str(), user.size(), 0);
-//     user.clear();
-// }
-
 void Client::GetUsersList() {
     uint16_t start_byte = 0xCAFE;
 
@@ -177,10 +151,6 @@ void Client::GetUsersList() {
     uint16_t numUsers;
     size_t rec = recv(m_clientsock, &numUsers, sizeof(numUsers), 0);
 
-
-    // std::cout << "NumUsers:  " << numUsers << "   *****" << std::endl;
-
-
     if (rec < 0) {
         std::cerr << "Error receiving number of users from server" << std::endl;
         return;
@@ -189,7 +159,6 @@ void Client::GetUsersList() {
     for (uint16_t i = 0; i < numUsers; ++i) {
         size_t len;
         rec = recv(m_clientsock, &len, sizeof(len), 0);
-        // std::cout << "Len :    " << len << "     #########" << std::endl;
         if (rec < 0) {
             std::cerr << "Error receiving username length from server" << std::endl;
             return;
@@ -220,6 +189,14 @@ void Client::SendMsg(std::string &username, std::string &msg) {
 }
 
 void Client::GetAllMsgs() {
+    uint16_t start_byte = 0xCBED;
+
+    int snd = send(m_clientsock, &start_byte, sizeof(start_byte), 0);
+
+    if (snd < 0)
+        std::cerr << "Failed to send All Messages request " << std::endl;
+
+    
 }
 
 Client::~Client() {

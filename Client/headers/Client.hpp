@@ -3,13 +3,6 @@
 
 #include <iostream>
 #include "../../includes/includes.hpp"
-// #include "../../Server/headers/Server.hpp"
-// #include "/Users/ihovhann/Desktop/Final_task/includes/includes.hpp"
-
-
-// struct Protocol::User;
-// using Protocol;
-
 
 struct Response {
     uint8_t OK = 0x01;

@@ -107,17 +107,13 @@ bool Database::VerifyUser(const std::string& username, const std::string& passwo
 void Database::AddUser(std::string &username, std::string &password) {
     try
     {
-        // if (m_connection != nullptr)
-            // std::cout << "null chi stegh " << std::endl; 
         if (m_connection) {
             pqxx::work transaction(*m_connection);
             transaction.exec_params("INSERT INTO Users (username, password) VALUES ($1, $2)",
                                     username, password);
             
             transaction.commit();
-            // std::cout << "User " << username << " registered successfully." << std::endl;
         } else {
-            // std::cout << "eka stegh " << std::endl;
             std::cerr << "Error: m_connection is null" << std::endl;
             return;
         }

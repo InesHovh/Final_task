@@ -1,15 +1,8 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
-// #pragma once
 
-#include <iostream>
-#include <set>
-#include <map>
 #include "../../includes/includes.hpp"
 #include "Database.hpp"
-// #include "/Users/ihovhann/Desktop/Final_task/includes/includes.hpp"
-
-// using namespace Protocol;
 
 struct Request {
     uint8_t OK = 0x01;
@@ -23,9 +16,11 @@ private:
     int m_fdmax;
     std::set<int> m_clients;
     Database *m_database;
-public:
+
+
     Protocol::User user{};
-    std::map<std::string, std::string> m_client;
+    Protocol::Updatemsg updatemsg{};
+    Protocol::Packet packet{};
 public:
     Server() {};
     Server(const char *port, Database *database);
@@ -45,6 +40,9 @@ public:
     void GetUsersListFromDB(int clientsock);
 
     void AddMsgsToDB(std::string &username, std::string &msg, int clientsock);
+
+    void PacketBody(int clientsock);
+    void UpdateMsgs();
 
     void DisconnectClient();
 

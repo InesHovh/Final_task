@@ -16,13 +16,7 @@
 #include <fcntl.h>
 #include <set>
 #include <stdint.h>
-
-// #include "../Client/headers/Client.hpp"
-// #include "../Server/headers/Server.hpp"
-// #include "Server/headers/Database.hpp"
-
-// class Server;
-// class Client;
+#include <ctime>
 
 namespace Protocol {
     struct User {
@@ -41,10 +35,6 @@ namespace Protocol {
         uint16_t    msg_size;
         char        msg[500];
         uint16_t    crc_checksum;
-    };
-
-    struct GetMsgs {
-        uint16_t    start_byte;
     };
 
     struct Updatemsg {
