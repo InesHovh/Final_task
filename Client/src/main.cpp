@@ -3,7 +3,7 @@
 #include "../headers/Client.hpp"
 
 int main() {
-    Client client("1245", "127.0.0.1");
+    Client client("1234", "127.0.0.1");
 
     if (client.Start()) {
         std::cout << "Connected to the server.\n";
@@ -26,6 +26,7 @@ int main() {
                 break;
             } else if (command == "2") {
                 client.SendLoginRequest();
+                std::cout << "Durs eka " << std::endl;
                 break;
             } else if (command == "3") {
                 exit(0);
@@ -40,11 +41,11 @@ int main() {
         client.GetUsersList();
         std::cout << std::endl;
 
-        while (1) {
+        std::string receiverUsername;
+        std::cout << "Enter the username of the user you want to message (or type 'Exit' to quit): ";
+        std::getline(std::cin, receiverUsername);
 
-            std::string receiverUsername;
-            std::cout << "Enter the username of the user you want to message (or type 'Exit' to quit): ";
-            std::getline(std::cin, receiverUsername);
+        while (1) {
 
             if (receiverUsername == "Exit") {
                 break;
@@ -57,24 +58,14 @@ int main() {
             if (message == "Exit") {
                 break;
             }
+            
+            client.SendToSecondUser(receiverUsername, message);
 
-            client.PrivateMsgs(receiverUsername, message);
-            // else {
-            //     std::cout << "Please type a correct command." << std::endl;
-            //     continue;
-            // }
-
-            // check the database , if this user is exist (chgitem vonc)
-
-            // std::string message;
-            // std::cout << "Enter your message (or type 'Exit' to quit): ";
-            // std::getline(std::cin, message);
-
-            // if (message == "Exit") {
-            //     break;
-            // }
-
-            client.PrivateMsgs(receiverUsername, message);
+            // std::string response;
+            // if (client.ReceiveToTheFirst(response))
+            //     std::cout << "Response from " << receiverUsername << std::endl;
+            // else 
+            //     std::cerr << "Failed to receive " << std::endl;
         }
     } else {
         std::cerr << "Failed to connect to the server.\n";

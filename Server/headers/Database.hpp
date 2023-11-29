@@ -32,7 +32,7 @@ public:
 
     std::vector<std::string> SendUsersList();
 
-    void AddMsg(uint32_t timestamp,std::string &username, std::string &msg);
+    void AddMsg(const std::string &timestamp,std::string &username, std::string &msg);
     // void PutMsg();
 
     ~Database();

@@ -23,9 +23,10 @@ public:
 
     void GetUsersList();
 
-    void PrivateMsgs(const std::string &user, const std::string &msg);
+    bool SendToSecondUser(const std::string &user, const std::string &msg);
+    // bool ReceiveToTheFirst(std::string &response);
 
-    void SendMsg(std::string &username, std::string &msg);
+    // void SendMsg(std::string &username, std::string &msg);
     
     void GetAllMsgs();
     

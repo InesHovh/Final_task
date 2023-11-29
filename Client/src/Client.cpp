@@ -89,7 +89,10 @@ void Client::SendRegistrationRequest() {
         user.crc_checksum = sizeof(user);
     }
 
+    std::cout << "stegh el a mtnum " << std::endl;
+
     int snd = send(m_clientsock, &user, sizeof(user), 0);
+    std::cout << "Sendic heto " << std::endl;
     if(snd < 0)
         std::cerr << "Failed to send request " << std::endl;
     else {
@@ -98,9 +101,11 @@ void Client::SendRegistrationRequest() {
         std::cout << "stegh em " << std::endl;
         if (res == resp.OK){
             std::cout << "You have successfully registered and logged in to your account. " << std::endl;
+            return ;
         }
         else if(res == resp.ERROR){
             std::cout << "Failed to register " << std::endl;
+            return ;
         }
     }
 }
@@ -120,19 +125,19 @@ void Client::SendLoginRequest() {
     }
 
     int snd = send(m_clientsock, &user, sizeof(user), 0);
+    if(snd < 0)
+        std::cerr << "Failed to send request " << std::endl;
     while(i < 3){
-        if(snd < 0)
-            std::cerr << "Failed to send request " << std::endl;
-        else {
-            uint8_t res;
-            int rec = recv(m_clientsock, &res, sizeof(res), 0);
-            if (res == resp.OK) {
-                std::cout << "You are logged in successfully. " << std::endl;
-            }
-            else if(res == resp.ERROR){
-                std::cout << "Failed to login. Try again." << std::endl;
-                ++i;
-            }
+        uint8_t res;
+        int rec = recv(m_clientsock, &res, sizeof(res), 0);
+        if (res == resp.OK) {
+            std::cout << "You are logged in successfully. " << std::endl;
+            return ;
+        }
+        else if(res == resp.ERROR){
+            std::cout << "Failed to login. Try again." << std::endl;
+            // send(m_clientsock, &user, sizeof(user), 0);
+            return ;
         }
     }
 }
@@ -163,6 +168,8 @@ void Client::GetUsersList() {
         if (rec < 0) {
             std::cerr << "Error receiving username length from server" << std::endl;
             return;
+        } else if(rec == 0) {
+            close(m_clientsock);
         }
 
         char buffer[len + 1];
@@ -173,6 +180,8 @@ void Client::GetUsersList() {
         if (rec < 0) {
             std::cerr << "Error receiving username from server" << std::endl;
             return;
+        } else if(rec == 0) {
+            close(m_clientsock);
         }
 
         std::cout << "User " << i + 1 << "  " << buffer << std::endl;
@@ -181,25 +190,74 @@ void Client::GetUsersList() {
 
 
 
-void Client::PrivateMsgs(const std::string &user, const std::string &msg) {
-    int snd1 = send(m_clientsock, &user, sizeof(user), 0);
+bool Client::SendToSecondUser(const std::string &user, const std::string &msg) {
+    uint16_t start_byte = 0xCBAF;
+    send(m_clientsock, &start_byte, sizeof(start_byte), 0);
+
+    std::cout << "Client's socket " << m_clientsock << std::endl;
+
+    size_t size = user.size();
+    send(m_clientsock, &size, sizeof(size), 0);
+
+    size_t snd1 = send(m_clientsock, user.c_str(), size, 0);
+
+    // std::cout << "Username of the second user   " << user << std::endl;
 
     if (snd1 < 0) {
         std::cerr << "Failed to send in Private Message username" << std::endl;
-        return ;
+        return false;
     }
 
-    int snd2 = send(m_clientsock, &msg, sizeof(msg), 0);
+    size_t msg_size = msg.size();
+    send(m_clientsock, &msg_size, sizeof(msg_size), 0);
+
+    size_t snd2 = send(m_clientsock, msg.c_str(), msg_size, 0);
+
+    // std::cout << "Message to the second user  " << msg << std::endl;
 
     if (snd2 < 0) {
         std::cerr << "Failed to send in Private Message message" << std::endl;
-        return ;
+        return false;
     }
+
+    // size_t msg_size2;
+    // int clientsock;
+    // size_t rec = recv(clientsock, &msg_size2, sizeof(msg_size2), 0);
+
+    // std::cout << "Second client's socket:    " << clientsock << std::endl;
+
+    // std::string message(msg_size2, ' ');
+    // size_t rec_msg = recv(m_clientsock, &message[0], msg_size2, 0);
+
+    // std::cout << "Second client't message is received:   " << message << std::endl;
+
+    // if(rec_msg < 0) {
+    //     std::cerr << "Failed to receive the message to second user from server" << std::endl;
+    //     return false;
+    // }
+
+    return true;
 }
 
-void Client::SendMsg(std::string &username, std::string &msg) {
+// bool Client::ReceiveToTheFirst(std::string &response){
+//     size_t response_size;
+//     size_t rec = recv(m_clientsock, &response_size, sizeof(response_size), 0);
 
-}
+//     if(rec < 0){
+//         std::cerr << "Failed to receive " << std::endl;
+//         return false;
+//     }
+
+//     response.resize(response_size + 1);
+//     size_t rec_size = recv(m_clientsock, &response[0], response_size, 0);
+
+//     if(rec_size < 0){
+//         std::cerr << "Failed to receive " << std::endl;
+//         return false;
+//     }
+//     return true;
+// }
+
 
 void Client::GetAllMsgs() {
     uint16_t start_byte = 0xCBED;

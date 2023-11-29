@@ -55,7 +55,7 @@ namespace Protocol {
 
     struct Packet {
         uint16_t    start_byte;
-        uint32_t    timestamp;
+        std::string timestamp;
         uint8_t     username_size;
         char        username[255];
         uint16_t    msg_size;

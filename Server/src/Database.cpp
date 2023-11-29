@@ -173,7 +173,7 @@ std::vector<std::string> Database::SendUsersList() {
     }
 }
 
-void Database::AddMsg(uint32_t timestamp, std::string &username, std::string &msg) {
+void Database::AddMsg(const std::string &timestamp, std::string &username, std::string &msg) {
     try
     {
         if (m_connection) {
