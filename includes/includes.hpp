@@ -16,7 +16,9 @@
 #include <fcntl.h>
 #include <set>
 #include <stdint.h>
-#include <ctime>
+// #include <ctime>
+#include <chrono>
+#include <unordered_map>
 
 namespace Protocol {
     struct User {
@@ -33,6 +35,14 @@ namespace Protocol {
         uint8_t     username_size;
         char        username[255];
         uint16_t    msg_size;
+        char        msg[500];
+        uint16_t    crc_checksum;
+    };
+
+    struct PrivateMsg {
+        uint16_t    start_byte;
+        char        sender_username[255];
+        char        rec_username[255];
         char        msg[500];
         uint16_t    crc_checksum;
     };

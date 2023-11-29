@@ -21,6 +21,7 @@ bool Client::Start() {
         std::cerr << "Failed to create the socket" << std::endl;
     }
 
+    std::cout << "M_clientsocket  " << m_clientsock << std::endl;
     if (connect(m_clientsock, result->ai_addr, result->ai_addrlen) < 0) {
         std::cerr << "Failed to connect to the server" << std::endl;
         close(m_clientsock);
@@ -139,9 +140,9 @@ void Client::SendLoginRequest() {
 void Client::GetUsersList() {
     uint16_t start_byte = 0xCAFE;
 
-    std::cout << "yes aystegh em hima " << std::endl;
 
     int snd = send(m_clientsock, &start_byte, sizeof(start_byte), 0);
+    std::cout << "yes aystegh em hima " << std::endl;
 
     if (snd < 0) {
         std::cerr << "Failed to send start_byte to server" << std::endl;
@@ -180,8 +181,20 @@ void Client::GetUsersList() {
 
 
 
-void Client::PrivateMsgs(const std::string &user) {
+void Client::PrivateMsgs(const std::string &user, const std::string &msg) {
+    int snd1 = send(m_clientsock, &user, sizeof(user), 0);
 
+    if (snd1 < 0) {
+        std::cerr << "Failed to send in Private Message username" << std::endl;
+        return ;
+    }
+
+    int snd2 = send(m_clientsock, &msg, sizeof(msg), 0);
+
+    if (snd2 < 0) {
+        std::cerr << "Failed to send in Private Message message" << std::endl;
+        return ;
+    }
 }
 
 void Client::SendMsg(std::string &username, std::string &msg) {

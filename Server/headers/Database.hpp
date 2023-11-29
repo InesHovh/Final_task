@@ -28,9 +28,11 @@ public:
 
     void AddUser(std::string &username, std::string &password);
 
+    void SetOnlineStatus(const std::string &username, bool status);
+
     std::vector<std::string> SendUsersList();
 
-    void AddMsg(std::string &username, std::string &msg);
+    void AddMsg(uint32_t timestamp,std::string &username, std::string &msg);
     // void PutMsg();
 
     ~Database();

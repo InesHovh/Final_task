@@ -72,11 +72,12 @@ void Server::Start() {
                     if (clientsock > m_fdmax) {
                         m_fdmax = clientsock;
                     }
-                    std::cout << "Connected " << std::endl;
+                    
+                    std::cout << "Connected " << clientsock  << "  client" << std::endl;
                 } else {
                     HandleResponse(i);
-                    std::cout << "Barev dzez  " << std::endl;
                     GetUsersListFromDB(i);
+                    PeerMsgs(i);
                 }
             }
         }
@@ -87,56 +88,50 @@ void Server::HandleResponse(int clientsock) {
     Request req;
     size_t rec = recv(clientsock, &user, sizeof(user), 0);
 
+    std::cout << "Client socket 1   " << clientsock << std::endl;
+
     if (rec < 0) {
         std::cerr << "Error receiving data " << clientsock << std::endl;
     } else if(rec == 0) {
         std::cout << "Client " << clientsock << " disconnected" << std::endl;
+        m_database->SetOnlineStatus(user.username, false);
+        store.erase(user.username);
         close(clientsock);
         FD_CLR(clientsock, &m_master);
-        m_clients.erase(clientsock);
     } else {
         if (user.start_byte == 0XCBFF){
-            if(m_client.empty()){
-                Registration(user.username, clientsock);
-                send(clientsock, &req.OK, sizeof(req.OK), 0);
-            }
-            else {
                 std::string msg = "REGISTER";
                 std::string username(this->user.username);
                 std::string pass(this->user.pass);
-                if (CheckDB(username, pass, msg, clientsock)){
+
+                if (m_database->CheckUser(user.username)){
+                    std::cout << "This account already exists. Try to register with another username or login." << std::endl;
                     int snd = send(clientsock, &req.ERROR, sizeof(req.ERROR), 0);
                     if(snd < 0)
                         std::cout << "Failed to send ERROR reqonse for registration";
                 }
                 else {
+                    std::cout << "stegh em 2" << std::endl;
                     Registration(user.username, clientsock);
                     send(clientsock, &req.OK, sizeof(req.OK), 0);
                 }
-            }
         }
+
         else if(user.start_byte == 0xCBAE) {
             int i = 0;
-            
-            if(m_client.empty()) {
-                Registration(user.username, clientsock);
-                send(clientsock, &req.OK, sizeof(req.OK), 0);
-            }
                 
             while(i <= 2){
-                std::string msg = "LOGIN";
-                std::string username(this->user.username);
-                std::string pass(this->user.pass);
-                if (CheckDB(username, pass, msg, clientsock)) {
-                    std::cout << "Incorrect password. Please check it or try to create a new account." << std::endl;
-                    ++i;
+                if (m_database->VerifyUser(user.username, user.pass)) {
+                    std::cout << "Incorrect username or password. Please check and try again." << std::endl;
                     if (i == 2) {
                         std::cerr << "Maximum login attempts reached. Exiting loop..." << std::endl;
                         break;
-                    } else {
-                        Login(user.username, clientsock);
-                        send(clientsock, &req.OK, sizeof(req.OK), 0);
-                    }
+                    } 
+                    ++i;
+                }
+                else {
+                    Login(user.username, clientsock);
+                    send(clientsock, &req.OK, sizeof(req.OK), 0);
                 }
                 int snd = send(clientsock, &req.ERROR, sizeof(req.ERROR), 0);
                 if(snd < 0)
@@ -151,13 +146,19 @@ void Server::Registration(const std::string &user, int clientsock) {
     std::string username(this->user.username);
     std::string pass(this->user.pass);
     m_database->AddUser(username, pass);
+    m_database->SetOnlineStatus(username, true);
+    store.insert(std::make_pair(username, clientsock));
 }
 
 void Server::Login(const std::string &user, int clientsock) {
     std::cout << "Dear " << this->user.username << ", you have been logged in successfully." << std::endl;
+    std::string username(this->user.username);
+    std::string pass(this->user.pass);
+    m_database->SetOnlineStatus(this->user.username, true);
+    store.insert(std::make_pair(username, clientsock));
 }
 
-void Server::DisconnectClient() {
+void Server::DisconnectClientFromServer() {
     std::cout << "Server is disconnecting clients..." << std::endl;
 
     for (int i = 0; i <= m_fdmax; ++i) {
@@ -168,6 +169,8 @@ void Server::DisconnectClient() {
             }
             close(i);
             FD_CLR(i, &m_master);
+            m_database->SetOnlineStatus(user.username, false);
+            store.erase(user.username);
         }
     }
 }
@@ -188,33 +191,11 @@ void Server::ConnectionToDB(Database &database) {
     }
 }
 
-bool Server::CheckDB(std::string &username, std::string &pass, std::string &msg, int clientsock) {
-    if (msg == "REGISTER") {
-        if (m_database->CheckUser(username)) {
-            std::cout << "This account already exists. Try to register with another username or login." << std::endl;
-            return true;
-        } else {
-            Registration(username, clientsock);
-            return false;
-        }
-    } else if (msg == "LOGIN") {
-        if (m_database->VerifyUser(username, pass)) {
-            std::cout << "User login successful." << std::endl;
-            Login(username, clientsock);
-            return true;
-        } else {
-            std::cout << "Incorrect username or password. Please check and try again." << std::endl;
-            return false;
-        }
-    } else {
-        std::cerr << "Invalid message type for database check" << std::endl;
-        return false;
-    }
-}
 
 void Server::GetUsersListFromDB(int clientsock) {
     uint16_t start_byte = 0xCAFE;
 
+    std::cout << clientsock << std::endl;
 
     uint16_t resp;
     size_t rec = recv(clientsock, &resp, sizeof(resp), 0);
@@ -241,21 +222,66 @@ void Server::GetUsersListFromDB(int clientsock) {
     }
 }
 
+void Server::PeerMsgs(int clientsocket) {
+    std::string username;
+    int peer_user = recv(clientsocket, &username, sizeof(username), 0);
+
+    if (peer_user < 0) {
+        std::cerr << "Failed to recevie Private message username" << std::endl;
+        return ;
+    }
+
+    std::string msg;
+    int peer_msg = recv(clientsocket, &msg, sizeof(msg), 0);
+
+    if (peer_msg < 0) {
+        std::cerr << "Failed to recevie Private Message msg" << std::endl;
+        return ;
+    }
+
+    auto it = store.find(username);
+
+    PacketBody(it->second, username, msg);
+
+    int user_2 = send(it->second, &msg, sizeof(msg), 0);
+
+    if (user_2 < 0) {
+        std::cerr << "Failed to send to second user " << std::endl;
+        return ;
+    }
+}
+
+
+// void Server::AddMsgsToDB(uint32_t timestamp, std::string &username, std::string &msg) {}
+
+
 void Server::UpdateMsgs() {
     updatemsg.start_byte = 0xABCF;
 
     
 }
 
-void Server::PacketBody(int clientsock) {
+void Server::PacketBody(int clientsock, std::string &username, std::string &msg) {
     packet.start_byte = 0xABFD;
     packet.username_size = std::strlen(packet.username);
     packet.msg_size = std::strlen(packet.msg);
     packet.crc_checksum = sizeof(packet);
 
-    std::time_t current_time = std::time(nullptr);
+    
+
+    auto now = std::chrono::system_clock::now();
+    std::time_t current_time = std::chrono::system_clock::to_time_t(now);
 
     packet.timestamp = static_cast<uint32_t>(current_time);
+
+    std::string user(packet.username);
+    std::string message(packet.msg);
+
+    user = username;
+    message = msg;
+
+    // AddMsgsToDB(packet.timestamp, user, message);
+    m_database->AddMsg(packet.timestamp, user, message);
 }
 
 

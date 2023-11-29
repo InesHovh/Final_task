@@ -124,21 +124,45 @@ void Database::AddUser(std::string &username, std::string &password) {
     
 }
 
+void Database::SetOnlineStatus(const std::string &username, bool status) {
+    try
+    {
+        if(m_connection) {
+            pqxx::work transaction(*m_connection);
+
+            transaction.exec_params("UPDATE Users SET online_status = $1 WHERE username = $2",
+                status, username);
+
+            if (status) {
+                std::cout << "Online Statusi mej em   " << username << "       "  << status << std::endl; 
+            }
+
+            transaction.commit();
+        } else {
+            std::cerr << "Error: m_connection is null " << std::endl;
+        }
+    } catch(const std::exception& e) {
+        std::cerr << "Error " << e.what() << std::endl;
+    }
+    
+}
+
+
 std::vector<std::string> Database::SendUsersList() {
     try
     {
         if (m_connection) {
             pqxx::work transaction(*m_connection);
-            pqxx::result result = transaction.exec("SELECT * FROM Users");
+            pqxx::result result = transaction.exec("SELECT * FROM Users WHERE online_status = true");
 
-            std::vector<std::string> users;
+            std::vector<std::string> online_users;
 
             for (const auto &row : result) {
-                users.push_back(row["username"].as<std::string>());
+                online_users.push_back(row["username"].as<std::string>());
             }
 
             transaction.commit();
-            return users;
+            return online_users;
         } else {
             std::cerr << "Error: m_connection is null" << std::endl;
             return {};
@@ -149,13 +173,23 @@ std::vector<std::string> Database::SendUsersList() {
     }
 }
 
-void Database::AddMsg(std::string &username, std::string &msg) {
+void Database::AddMsg(uint32_t timestamp, std::string &username, std::string &msg) {
     try
     {
         if (m_connection) {
             pqxx::work transaction(*m_connection);
-            transaction.exec_params("INSERT INTO Messages (username, password) VALUES ($1, $2)",
-                                                            username, msg );
+            auto result = transaction.exec_params("SELECT user_id FROM Users WHERE username = $1", 
+                                        username);
+
+            if (result.empty()) {
+                std::cerr << "Error: User not found for username " << username << std::endl;
+                return ;
+            }
+
+            int user_id = result[0][0].as<int>();
+
+            transaction.exec_params("INSERT INTO Messages (user_id, send_time, message) VALUES($1, $2, $3)",
+                                                user_id, timestamp, msg);
 
             transaction.commit();
         } else {
@@ -165,7 +199,6 @@ void Database::AddMsg(std::string &username, std::string &msg) {
     } catch(const std::exception& e) {
         std::cerr << "Error: add msgs to database " << e.what() << std::endl;
     }
-    
 }
 
 Database::~Database() {}

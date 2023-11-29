@@ -23,7 +23,7 @@ public:
 
     void GetUsersList();
 
-    void PrivateMsgs(const std::string &user);
+    void PrivateMsgs(const std::string &user, const std::string &msg);
 
     void SendMsg(std::string &username, std::string &msg);
     
