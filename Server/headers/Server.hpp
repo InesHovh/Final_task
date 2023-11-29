@@ -15,7 +15,7 @@ private:
     fd_set m_master;
     int m_fdmax;
     std::set<int> m_clients;
-    Database *m_database;
+    // Database *m_database;
 
     // std::unordered_map<int, std::string> user_socket;
 
@@ -26,7 +26,7 @@ private:
     Protocol::Packet packet{};
 public:
     Server() {};
-    Server(const char *port, Database *database);
+    Server(const char *port); //,Database *database);
 
     void init(const char *port);
     void Start();
@@ -44,7 +44,7 @@ public:
     // void UpdateSocketByUsername(int clientsock, const std::string &username);
     // void RemoveSocket(int clientsock);
 
-    void ConnectionToDB(Database &database);
+    // void ConnectionToDB(Database &database);
     void GetUsersListFromDB(int clientsock);
 
     void PeerMsgs(int clientsocket);

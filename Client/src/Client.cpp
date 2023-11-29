@@ -191,51 +191,44 @@ void Client::GetUsersList() {
 
 
 bool Client::SendToSecondUser(const std::string &user, const std::string &msg) {
-    uint16_t start_byte = 0xCBAF;
-    send(m_clientsock, &start_byte, sizeof(start_byte), 0);
-
-    std::cout << "Client's socket " << m_clientsock << std::endl;
-
     size_t size = user.size();
     send(m_clientsock, &size, sizeof(size), 0);
 
     size_t snd1 = send(m_clientsock, user.c_str(), size, 0);
-
-    // std::cout << "Username of the second user   " << user << std::endl;
 
     if (snd1 < 0) {
         std::cerr << "Failed to send in Private Message username" << std::endl;
         return false;
     }
 
-    size_t msg_size = msg.size();
-    send(m_clientsock, &msg_size, sizeof(msg_size), 0);
+    while(1) {
+        size_t msg_size = msg.size();
+        send(m_clientsock, &msg_size, sizeof(msg_size), 0);
 
-    size_t snd2 = send(m_clientsock, msg.c_str(), msg_size, 0);
+        size_t snd2 = send(m_clientsock, msg.c_str(), msg_size, 0);
 
-    // std::cout << "Message to the second user  " << msg << std::endl;
+        if (snd2 < 0) {
+            std::cerr << "Failed to send in Private Message message" << std::endl;
+            return false;
+        }
 
-    if (snd2 < 0) {
-        std::cerr << "Failed to send in Private Message message" << std::endl;
-        return false;
+        size_t msg_size1;
+        size_t rec = recv(m_clientsock, &msg_size1, sizeof(msg_size1), 0);
+
+        if (rec < 0) {
+            std::cerr << "Failed to recevie Private msg_size" << std::endl;
+            return false;
+        }
+
+        std::string msg1(msg_size1, ' ');
+        size_t rec1 = recv(m_clientsock, &msg1[0], msg_size1, 0);
+
+        if (rec1 < 0) {
+            std::cerr << "Failed to recevie Private msg1" << std::endl;
+            return false;
+        }
+
     }
-
-    // size_t msg_size2;
-    // int clientsock;
-    // size_t rec = recv(clientsock, &msg_size2, sizeof(msg_size2), 0);
-
-    // std::cout << "Second client's socket:    " << clientsock << std::endl;
-
-    // std::string message(msg_size2, ' ');
-    // size_t rec_msg = recv(m_clientsock, &message[0], msg_size2, 0);
-
-    // std::cout << "Second client't message is received:   " << message << std::endl;
-
-    // if(rec_msg < 0) {
-    //     std::cerr << "Failed to receive the message to second user from server" << std::endl;
-    //     return false;
-    // }
-
     return true;
 }
 
