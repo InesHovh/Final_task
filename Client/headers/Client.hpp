@@ -2,43 +2,30 @@
 #define CLIENT_HPP
 
 #include <iostream>
-#include "../../includes/includes.hpp"
-
-struct Response {
-    uint8_t OK = 0x01;
-    uint8_t ERROR = 0x00;
-};
+#include <cstring>
+#include <thread>
+#include <cstdlib>
+#include <unistd.h>
+#include <pthread.h>
+#include <cstring>
+#include <arpa/inet.h>
 
 class Client {
 public:
-    Client();
-    Client(const char *port, const char *servaddr);
-    bool Start();
 
-    bool SendMsgToServer(std::string &msg);
-
-    void UserInfo(size_t &fields);
-    void SendLoginRequest();
-    void SendRegistrationRequest();
-
-    void GetUsersList();
-
-    bool SendToSecondUser(const std::string &user, const std::string &msg);
-    // bool ReceiveToTheFirst(std::string &response);
-
-    // void SendMsg(std::string &username, std::string &msg);
-    
-    void GetAllMsgs();
-    
-    ~Client();
-public:
-    int m_clientsock;
-    bool m_active;
-    Protocol::User user{};
 private:
-    const char *m_port;
-    const char *m_servaddr;
+    int socketFD;
+public:
+    Client();
+    ~Client();
 
+    void start();
+    static int createTCPIpv4Socket();
+    static sockaddr_in* createIPv4Address(const char* ip, int port);
+    static void *listenAndPrintWrapper(void *data);
+    void listenAndPrint();
+    void readConsoleEntriesAndSendToServer();
+    void startListeningAndPrintMessagesOnNewThread();
 };
 
-#endif // Client.hpp
+#endif // CLIENT_HPP

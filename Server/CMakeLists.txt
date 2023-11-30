@@ -19,9 +19,5 @@ add_executable(${PROJECT_NAME} ${SRCS})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE libpqxx::pqxx)
 
-# include_directories(${CMAKE_SOURCE_DIR}/headers)
-
-
-
-
-
+# target_include_directories(Server PRIVATE libpqxx::pqxx)
+# target_link_libraries(Server PRIVATE libpqxx::pqxx)
