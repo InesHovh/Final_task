@@ -43,7 +43,7 @@ void Server::init(const char *port)
 
     freeaddrinfo(result);
 
-    // fcntl(serverSocketFD, F_SETFL, O_NONBLOCK);
+    fcntl(serverSocketFD, F_SETFL, O_NONBLOCK);
 
     int listenResult = listen(serverSocketFD, 10);
     if (listenResult == -1)
@@ -95,37 +95,76 @@ void *Server::receiveAndPrintIncomingData(void *data)
 
 void Server::receiveIncomingData(int socketFD)
 {
-    char buffer[1024];
+    char buffer[2048];
+    uint8_t OK = 0x01, ERROR = 0x00;
     int i = 0;
 
     while (true)
     {
         ssize_t amountReceived = recv(socketFD, buffer, 1024, 0);
 
-        if(i == 0) {
-            std::string name(buffer);
-            database->AddClient(name);
+        if (i == 0)
+        {
+            std::string combine(buffer);
+
+            size_t split = combine.find(":");
+            std::string name = combine.substr(0, split);
+            std::string pass = combine.substr(split + 1);
+
+            bool check = database->CheckUser(name);
+            if (!check)
+            {
+                std::cout << "You have successfully registered." << std::endl;
+                database->AddClient(name, pass);
+                continue;
+            }
+            else
+            {
+                bool loginSuccess = database->VerifyUser(name, pass);
+                if (loginSuccess)
+                {
+                    std::cout << "You have successfully logged in." << std::endl;
+                }
+                else
+                {
+                    std::cout << "Incorrect username or password. Try again later. " << std::endl;
+                }
+            }
             ++i;
         }
 
         if (amountReceived > 0)
         {
+            std::string combine(buffer);
+            size_t msgs = combine.find(":");
+            std::string start_byte = combine.substr(0, msgs);
+            std::string username = combine.substr(msgs + 1);
             buffer[amountReceived] = 0;
-            
-            std::cout << buffer << std::endl;
 
+            if (start_byte == std::to_string(0xCBFD))
+            {
+                std::vector<std::string> messages = database->ShowMessages(username);
 
+                std::string allMessages;
+                for (const auto &msg : messages)
+                {
+                    allMessages += msg + ";";
+                }
+
+                send(socketFD, allMessages.c_str(), allMessages.size(), 0);
+                continue;
+            }
             SenddMessageToTheClients(buffer, socketFD);
-        } else if (amountReceived == 0) {
+        }
+        else if (amountReceived == 0)
+        {
             close(socketFD);
             return;
         }
 
-        if (i > 0) {
-            std::cout << "stegh em " << std::endl;
-
+        if (i > 0)
+        {
             std::istringstream str(buffer);
-
             std::string first, second;
 
             std::getline(str, first, ':');
@@ -134,13 +173,14 @@ void Server::receiveIncomingData(int socketFD)
             PacketBody(first, second);
         }
 
-
         if (amountReceived == 0)
             break;
     }
 
     close(socketFD);
 }
+
+
 
 void Server::PacketBody(const std::string &name, const std::string &msg) {
     packet.name = name;

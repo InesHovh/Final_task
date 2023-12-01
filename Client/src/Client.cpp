@@ -46,7 +46,7 @@ void Client::listenAndPrint() {
 
         if (amountReceived > 0) {
             buffer[amountReceived] = 0;
-            std::cout << "Response was " << buffer << std::endl;
+            std::cout << buffer << std::endl;
         }
 
         if (amountReceived == 0)
@@ -60,23 +60,40 @@ void Client::startListeningAndPrintMessagesOnNewThread() {
 }
 
 void Client::readConsoleEntriesAndSendToServer() {
-    char *name = nullptr;
-    size_t nameSize = 0;
-    std::cout << "Please enter your name?" << std::endl;
+    char *name = nullptr, *pass = nullptr;
+    size_t nameSize = 0, passSize = 0;
+    std::cout << "Please enter your username" << std::endl;
     ssize_t nameCount = getline(&name, &nameSize, stdin);
     name[nameCount - 1] = 0;
 
-    send(socketFD, name, strlen(name), 0);
+    std::cout << "Please enter your password" << std::endl;
+    ssize_t passCount = getline(&pass, &passSize, stdin);
+    pass[passCount - 1] = 0;
+
+    std::string combine = name + std::string(":") + pass;
+
+    send(socketFD, combine.c_str(), sizeof(combine), 0);
 
     char *line = nullptr;
     size_t lineSize = 0;
     std::cout << "Type the message..." << std::endl;
+    std::cout << std::endl;
+    std::cout << "If you want to see your all time messages please type 'show'" << std::endl;
+    std::cout << std::endl;
 
     char buffer[1024];
 
     while (true) {
         ssize_t charCount = getline(&line, &lineSize, stdin);
         line[charCount - 1] = 0;
+
+        std::string username(name);
+
+        if(strcmp(line, "show") == 0){
+            showMsgs(socketFD, username);
+            receiveAndPrintAllMessages(socketFD);
+            continue;
+        }
 
         sprintf(buffer, "%s: %s", name, line);
 
@@ -88,6 +105,37 @@ void Client::readConsoleEntriesAndSendToServer() {
         }
     }
 }
+
+void Client::showMsgs(int socketFD, std::string &name) {
+    uint16_t start_byte = 0xCBFD;
+
+    std::string mix = std::to_string(start_byte) + ":" + name;
+
+    send(socketFD, mix.c_str(), sizeof(mix), 0);
+}
+
+void Client::receiveAndPrintAllMessages(int socketFD)
+{
+    char buffer[2048];
+
+    ssize_t amountReceived = recv(socketFD, buffer, sizeof(buffer), 0);
+
+    if (amountReceived > 0)
+    {
+        buffer[amountReceived] = '\0';
+        std::istringstream messageStream(buffer);
+        std::string individualMessage;
+        while (std::getline(messageStream, individualMessage, ';'))
+        {
+            std::cout << "Received message: " << individualMessage << std::endl;
+        }
+    }
+    else
+    {
+        std::cout << "Failed to receive messages from server." << std::endl;
+    }
+}
+
 
 Client::~Client() {
     close(socketFD);

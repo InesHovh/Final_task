@@ -9,6 +9,7 @@
 #include <pthread.h>
 #include <cstring>
 #include <arpa/inet.h>
+#include <sstream>
 
 class Client {
 public:
@@ -25,6 +26,8 @@ public:
     static void *listenAndPrintWrapper(void *data);
     void listenAndPrint();
     void readConsoleEntriesAndSendToServer();
+    void showMsgs(int socketFD, std::string &name);
+    void receiveAndPrintAllMessages(int socketFD);
     void startListeningAndPrintMessagesOnNewThread();
 };
 
