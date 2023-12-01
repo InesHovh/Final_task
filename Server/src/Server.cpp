@@ -116,6 +116,8 @@ void Server::receiveIncomingData(int socketFD)
             {
                 std::cout << "You have successfully registered." << std::endl;
                 database->AddClient(name, pass);
+                send(socketFD, &OK, sizeof(OK), 0);
+                ++i;
                 continue;
             }
             else
@@ -124,10 +126,14 @@ void Server::receiveIncomingData(int socketFD)
                 if (loginSuccess)
                 {
                     std::cout << "You have successfully logged in." << std::endl;
+                    send(socketFD, &OK, sizeof(OK), 0);
                 }
                 else
                 {
                     std::cout << "Incorrect username or password. Try again later. " << std::endl;
+                    send(socketFD, &ERROR, sizeof(ERROR), 0);
+                    close(socketFD);
+                    return;
                 }
             }
             ++i;
@@ -162,7 +168,7 @@ void Server::receiveIncomingData(int socketFD)
             return;
         }
 
-        if (i > 0)
+        if (i > 1)
         {
             std::istringstream str(buffer);
             std::string first, second;

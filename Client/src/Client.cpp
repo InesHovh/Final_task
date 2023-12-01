@@ -2,7 +2,7 @@
 
 Client::Client() {
     socketFD = createTCPIpv4Socket();
-    struct sockaddr_in *address = createIPv4Address("127.0.0.1", 1245);
+    struct sockaddr_in *address = createIPv4Address("192.168.2.62", 1245);
 
     int result = connect(socketFD, reinterpret_cast<const sockaddr*>(address), sizeof(*address));
 
@@ -74,6 +74,26 @@ void Client::readConsoleEntriesAndSendToServer() {
 
     send(socketFD, combine.c_str(), sizeof(combine), 0);
 
+    uint8_t response = 0;
+    if(recv(socketFD, &response, sizeof(response), 0) >= 0)
+    {
+        if(response == 0)
+        {
+            std::cout << "Incorrect username or password. Try again later. " << std::endl;
+            close(socketFD);
+            return;
+        }
+
+        std::cout << "You have successfully logged in." << std::endl;
+    }
+    else
+    {
+        std::cout << "Can't rcv the status!!!" << std::endl;
+        close(socketFD);
+        return;
+    }
+
+
     char *line = nullptr;
     size_t lineSize = 0;
     std::cout << "Type the message..." << std::endl;
@@ -89,7 +109,10 @@ void Client::readConsoleEntriesAndSendToServer() {
 
         std::string username(name);
 
-        if(strcmp(line, "show") == 0){
+        if(strcmp(line, "show") == 0)
+        {
+            std::cout << "showing messages" << std::endl;
+
             showMsgs(socketFD, username);
             receiveAndPrintAllMessages(socketFD);
             continue;
@@ -100,6 +123,8 @@ void Client::readConsoleEntriesAndSendToServer() {
         if (charCount > 0) {
             if (strcmp(line, "exit") == 0)
                 break;
+
+            std::cout << "Sending message: " << buffer << std::endl;
 
             ssize_t amountWasSent = send(socketFD, buffer, strlen(buffer), 0);
         }
